@@ -47,4 +47,9 @@ public class SimpleViewer extends JFrame implements Runnable {
 		icon.setImage(image);
 		icon.paintIcon(this, this.getGraphics(), 0, 0);
 	}
+	
+	public static void main(String[] args){
+		SimpleViewer s = new SimpleViewer();
+		s.run();
+	}
 }

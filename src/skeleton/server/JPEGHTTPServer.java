@@ -9,7 +9,8 @@ package skeleton.server;
  * Adapted for Axis cameras by Roger Henriksson 
  */
 
-import java.net.*;                  // Provides ServerSocket, Socket
+import java.net.*;      
+            // Provides ServerSocket, Socket
 import java.io.*;                   // Provides InputStream, OutputStream
 
 import se.lth.cs.eda040.fakecamera.*;      // Provides AxisM3006V

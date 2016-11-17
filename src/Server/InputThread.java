@@ -5,29 +5,28 @@ import java.io.InputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class InputThread  extends Thread{
+public class InputThread extends Thread {
 	private Monitor monitor;
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
-	
-	public InputThread(Monitor mon, ServerSocket serverSocket){
+
+	public InputThread(Monitor mon, ServerSocket serverSocket) {
 		monitor = mon;
-		this.serverSocket =  serverSocket;
-		
+		this.serverSocket = serverSocket;
+
 	}
 
-	public void run(){
-
+	public void run() {
+		while (true) {
 			try {
 				clientSocket = serverSocket.accept();
-			
-	
-		monitor.setClientSocket(clientSocket);
-		InputStream input = clientSocket.getInputStream();
+
+				monitor.setClientSocket(clientSocket);
+				InputStream input = clientSocket.getInputStream();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
 	}
-	
+
 }

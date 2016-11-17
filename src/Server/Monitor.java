@@ -9,4 +9,7 @@ public class Monitor {
 	public void setClientSocket(Socket clientSocket){
 		this.clientSocket = clientSocket;
 	}
+	public Socket getClientSocket(){
+		return clientSocket;
+	}
 }

@@ -11,6 +11,7 @@ public class Camera extends Thread{
 	private Monitor monitor;
 	private InputThread input;
 	private ServerSocket serverSocket;
+	private OutputThread output;
 	
 	public Camera(int port){
 		this.port = port;
@@ -22,7 +23,8 @@ public class Camera extends Thread{
 		}
 		monitor = new Monitor();
 		input = new InputThread(monitor, serverSocket);
-		
 		input.start();
+		output = new OutputThread(monitor);
+		output.start();
 	}
 }

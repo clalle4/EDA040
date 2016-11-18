@@ -32,6 +32,7 @@ public class InputThread extends Thread {
 					// Got a GET request.
 					monitor.handleRequest(os);
 				}
+				InputStream input = clientSocket.getInputStream();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

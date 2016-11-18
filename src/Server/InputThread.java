@@ -23,6 +23,7 @@ public class InputThread extends Thread {
 
 				monitor.setClientSocket(clientSocket);
 				InputStream input = clientSocket.getInputStream();
+				
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

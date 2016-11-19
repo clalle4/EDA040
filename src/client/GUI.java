@@ -37,6 +37,16 @@ public class GUI extends JFrame implements Runnable {
 		icon1 = new ImageIcon();
 		icon2 = new ImageIcon();
 
+		JPanel namePanel = new JPanel(new GridLayout(1,2));
+		Font f = new Font("TimesRoman", Font.ITALIC, 25);
+		JTextArea name1 = new JTextArea("Camera 1");
+		name1.setFont(f);
+		name1.setEditable(false);
+		namePanel.add(name1);
+		JTextArea name2 = new JTextArea("Camera 2");
+		name2.setFont(f);
+		name2.setEditable(false);
+		namePanel.add(name2);
 		JPanel modePanel = new JPanel(new GridLayout(3, 2));
 		Font font = new Font("TimesRoman", Font.BOLD, 30);
 		JTextArea infoJTA = new JTextArea("Movie mode triggered by camera 1 (ex)");
@@ -53,15 +63,16 @@ public class GUI extends JFrame implements Runnable {
 		modePanel.add(cameraModeJTA);
 		cameraBox.setFont(font);
 		modePanel.add(cameraBox);
-		JTextArea viewModeJTA = new JTextArea("Current view mode: Syncronized");
+		JTextArea viewModeJTA = new JTextArea("Current view mode: Synchronous");
 		viewModeJTA.setEditable(false);
 		viewModeJTA.setFont(font);
 		modePanel.add(viewModeJTA);
 		viewBox.setFont(font);
 		modePanel.add(viewBox);
+		add(namePanel, BorderLayout.PAGE_START);
 		add(modePanel, BorderLayout.PAGE_END);
 		pack();
-		setSize(1300, 650);
+		setSize(1300, 720);
 		setLocationRelativeTo(null);
 		setVisible(true);
 	}
@@ -87,9 +98,9 @@ public class GUI extends JFrame implements Runnable {
 		Image image = getToolkit().createImage(jpeg);
 		getToolkit().prepareImage(image, -1, -1, null);
 		icon1.setImage(image);
-		icon1.paintIcon(this, this.getGraphics(), 640, 0);
+		icon1.paintIcon(this, this.getGraphics(), 640, 80);
 		icon2.setImage(image);
-		icon2.paintIcon(this, this.getGraphics(), 0, 0);
+		icon2.paintIcon(this, this.getGraphics(), 0, 80);
 	}
 	
 

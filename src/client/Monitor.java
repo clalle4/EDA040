@@ -1,36 +1,34 @@
 package client;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Monitor {
-	private ArrayList<Byte[]> images;
-	private ArrayList<String> adresses;
+	private LinkedList<Byte[]> cam1Images;
+	private LinkedList<Byte[]> cam2Images;
 	private boolean movieMode;
 
 	public Monitor() {
-		images = new ArrayList<Byte[]>();
-		adresses = new ArrayList<String>();
+		cam1Images = new LinkedList<Byte[]>();
+		cam2Images = new LinkedList<Byte[]>();
 		movieMode = false;
 	}
 
-	public void addImage(Byte[] image) {
-		images.add(image);
-
-		boolean motionDetected = image[0] == 1;
-		// byte 1 - 8: timestamp
-
-		for (int i = 1; i <= 8; i++) {
-			String temp = image[i].toString();
+	public void addImage(Byte[] image, int orderNbr) {
+		if(orderNbr == 1){
+			cam1Images.add(image);			
+		} else if (orderNbr == 2){
+			cam2Images.add(image);						
 		}
-		// byte 9 - 12: imagesize in bytes
-
+		if(image[0] == 1){
+			changeMode(true);
+		}
 	}
 
-	public void changeMode() {
-		movieMode = !movieMode;
+	public synchronized void changeMode(boolean mode) {
+		movieMode = mode;
 	}
 	
-	public boolean movieMode() {
+	public synchronized boolean movieMode() {
 		return movieMode;
 	}
 }

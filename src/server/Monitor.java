@@ -19,11 +19,11 @@ public class Monitor {
 
 
 	synchronized public void handleRequest(OutputStream os) throws IOException {
-		output = os;
+		output = os; 
+		putLine(output, "RECEIVE image");
 		putLine(output, "HTTP/1.0 200 OK");
-		putLine(output, "Content-Type: image/jpeg");
-		putLine(output, "Pragma: no-cache");
-		putLine(output, "Cache-Control: no-cache");
+		putLine(output, "Image size: bla");
+		putLine(output, "bla bla");
 		putLine(output, ""); // Means 'end of header'
 		sendImage();
 	}

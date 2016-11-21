@@ -68,7 +68,9 @@ public class InputThread extends Thread {
 					+ bytesRead + " bytes).");
 			// Interpret the request. Complain about everything but RECEIVE.
 			// Ignore the file name.
+			
 			if (responseLine.substring(0,8).equals("RECEIVE ")) {
+				
 				// skicka bild till monitor
 				mon.addImage(jpeg, orderNbr);				
 			}

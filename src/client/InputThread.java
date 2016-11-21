@@ -23,9 +23,31 @@ public class InputThread extends Thread {
 		// vänta på att ta emot bild
 		try {
 			InputStream is = sock.getInputStream();
+			
+			// Read the request
+			String request = getLine(is);
+
+			// The request is followed by some additional header lines,
+			// followed by a blank line.
+			String header;
+			boolean cont; 
+			do {
+				//TODO do something with the header
+				header = getLine(is);
+				cont = !(header.equals(""));
+			} while (cont);
+
+			System.out.println("HTTP request '" + request
+					+ "' received.");
+
 			Byte[] image = getImage(is);
-			// skicka bild till monitor
-			mon.addImage(image, orderNbr);
+			// Interpret the request. Complain about everything but RECEIVE.
+			// Ignore the file name.
+			if (request.substring(0,8).equals("RECEIVE ")) {
+				// skicka bild till monitor
+				mon.addImage(image, orderNbr);				
+			}
+			
 			if (!expected) {
 				mon.changeMode(true);
 			}
@@ -53,5 +75,29 @@ public class InputThread extends Thread {
 		}
 
 		return null;
+	}
+	
+	/**
+	 * Read a line from InputStream 's', terminated by CRLF. The CRLF is
+	 * not included in the returned string.
+	 */
+	private static String getLine(InputStream s)
+			throws IOException {
+		boolean done = false;
+		String result = "";
+
+		while(!done) {
+			int ch = s.read();        // Read
+			if (ch <= 0 || ch == 10) {
+				// Something < 0 means end of data (closed socket)
+				// ASCII 10 (line feed) means end of line
+				done = true;
+			}
+			else if (ch >= ' ') {
+				result += (char)ch;
+			}
+		}
+
+		return result;
 	}
 }

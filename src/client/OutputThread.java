@@ -8,6 +8,7 @@ public class OutputThread extends Thread {
 	private Monitor mon;
 	private Socket sock;
 	private InputThread input;
+	private static final byte[] CRLF = { 13, 10 };
 
 	public OutputThread(Monitor mon, Socket sock, InputThread input) {
 		this.mon = mon;
@@ -38,11 +39,25 @@ public class OutputThread extends Thread {
 		}
 
 	}
-	
+
 	private void sendRequest(OutputStream os) {
-		
-		
+		// Send a simple request, always for "/image.jpg"
+					try {
+						putLine(os, "GET /image.jpg HTTP/1.0");
+					putLine(os, "");        // The request ends with an empty line	
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 	}
-	
+
+	/**
+	 * Send a line on OutputStream 's', terminated by CRLF. The CRLF should not
+	 * be included in the string str.
+	 */
+	private static void putLine(OutputStream s, String str) throws IOException {
+		s.write(str.getBytes());
+		s.write(CRLF);
+	}
 
 }

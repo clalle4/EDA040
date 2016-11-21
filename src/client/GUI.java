@@ -123,9 +123,4 @@ public class GUI extends JFrame implements Runnable {
             System.out.println(mode);
 		}
 	}
-
-	public static void main(String[] args) {
-		GUI s = new GUI(new Monitor());
-		s.run();
-	}
 }

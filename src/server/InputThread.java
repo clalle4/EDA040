@@ -25,7 +25,9 @@ public class InputThread extends Thread {
 				os = clientSocket.getOutputStream();
 				// Read the request
 				String request = getLine(is);
-
+				
+				System.out.println("HTTP request '" + request
+						+ "' received.");
 				// Interpret the request. Complain about everything but GET.
 				// Ignore the file name.
 				if (request.substring(0, 4).equals("GET ")) {

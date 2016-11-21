@@ -17,38 +17,39 @@ public class OutputThread extends Thread {
 	}
 
 	public void run() {
+		while (true) {
+			// varje x sekund: skicka request till server
 
-		// varje x sekund: skicka request till server
+			if (!mon.movieMode()) {
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 
-		if (!mon.movieMode()) {
 			try {
-				Thread.sleep(5000);
-			} catch (InterruptedException e) {
+				OutputStream os = sock.getOutputStream();
+				sendRequest(os);
+				input.setExpected();
+			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		}
 
-		try {
-			OutputStream os = sock.getOutputStream();
-			sendRequest(os);
-			input.setExpected();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
-
 	}
 
 	private void sendRequest(OutputStream os) {
 		// Send a simple request, always for "/image.jpg"
-					try {
-						putLine(os, "GET /image.jpg HTTP/1.0");
-					putLine(os, "");        // The request ends with an empty line	
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+		try {
+			putLine(os, "GET /image.jpg HTTP/1.0");
+			putLine(os, ""); // The request ends with an empty line
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**

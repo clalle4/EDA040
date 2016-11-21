@@ -26,8 +26,8 @@ public class Main {
 			input[i] = new InputThread(mon, sock[i], i + 1);
 			output[i] = new OutputThread(mon, sock[i], input[i]);
 		}
-		GUI gui = new GUI(mon);
-		gui.run();
+//		GUI gui = new GUI(mon);
+//		gui.run();
 		for (InputThread it : input) {
 			it.start();
 		}

@@ -3,18 +3,18 @@ package client;
 import java.util.LinkedList;
 
 public class Monitor {
-	private LinkedList<Byte[]> cam1Images;
-	private LinkedList<Byte[]> cam2Images;
+	private LinkedList<byte[]> cam1Images;
+	private LinkedList<byte[]> cam2Images;
 	private boolean movieMode;
 	private String viewMode;
 
 	public Monitor() {
-		cam1Images = new LinkedList<Byte[]>();
-		cam2Images = new LinkedList<Byte[]>();
+		cam1Images = new LinkedList<byte[]>();
+		cam2Images = new LinkedList<byte[]>();
 		movieMode = false;
 	}
 
-	public synchronized void addImage(Byte[] image, int orderNbr) {
+	public synchronized void addImage(byte[] image, int orderNbr) {
 		if(orderNbr == 1){
 			cam1Images.add(image);			
 		} else if (orderNbr == 2){
@@ -41,8 +41,8 @@ public class Monitor {
 		return viewMode;
 	}
 	
-	public synchronized LinkedList<Byte[]> getImages(){
-		LinkedList<Byte[]> images = new LinkedList<Byte[]>();
+	public synchronized LinkedList<byte[]> getImages(){
+		LinkedList<byte[]> images = new LinkedList<byte[]>();
 		try{
 		images.add(cam1Images.remove(0));
 		images.add(cam2Images.remove(0));

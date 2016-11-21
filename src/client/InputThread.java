@@ -5,17 +5,21 @@ import java.io.InputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import se.lth.cs.eda040.fakecamera.AxisM3006V;
+
 public class InputThread extends Thread {
 	private Monitor mon;
 	private Socket sock;
 	private boolean expected;
 	private int orderNbr;
+	private byte [] jpeg;
 	
 	public InputThread(Monitor mon, Socket sock, int orderNbr) {
 		this.mon = mon;
 		this.sock = sock;
 		expected = false;
 		this.orderNbr = orderNbr;
+		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
 	}
 
 	public void run() {
@@ -24,8 +28,8 @@ public class InputThread extends Thread {
 		try {
 			InputStream is = sock.getInputStream();
 			
-			// Read the request
-			String request = getLine(is);
+			// Read the response
+			String responseLine = getLine(is);
 
 			// The request is followed by some additional header lines,
 			// followed by a blank line.
@@ -34,18 +38,39 @@ public class InputThread extends Thread {
 			do {
 				//TODO do something with the header
 				header = getLine(is);
+				System.out.println(header); //TODO delete me
 				cont = !(header.equals(""));
 			} while (cont);
 
-			System.out.println("HTTP request '" + request
+			System.out.println("HTTP request '" + responseLine
 					+ "' received.");
 
-			Byte[] image = getImage(is);
+			// Now load the JPEG image.
+			int bufferSize = jpeg.length;
+			int bytesRead  = 0;
+			int bytesLeft  = bufferSize;
+			int status;
+
+			// We have to keep reading until -1 (meaning "end of file") is
+			// returned. The socket (which the stream is connected to)
+			// does not wait until all data is available; instead it
+			// returns if nothing arrived for some (short) time.
+			do {
+				status = is.read(jpeg, bytesRead, bytesLeft);
+				// The 'status' variable now holds the no. of bytes read,
+				// or -1 if no more data is available
+				if (status > 0) {
+					bytesRead += status;
+					bytesLeft -= status;
+				}
+			} while (status >= 0);
+			System.out.println("Received image data ("
+					+ bytesRead + " bytes).");
 			// Interpret the request. Complain about everything but RECEIVE.
 			// Ignore the file name.
-			if (request.substring(0,8).equals("RECEIVE ")) {
+			if (responseLine.substring(0,8).equals("RECEIVE ")) {
 				// skicka bild till monitor
-				mon.addImage(image, orderNbr);				
+				mon.addImage(jpeg, orderNbr);				
 			}
 			
 			if (!expected) {

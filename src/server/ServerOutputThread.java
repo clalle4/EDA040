@@ -2,9 +2,9 @@ package server;
 
 import java.net.Socket;
 
-public class OutputThread extends Thread{
+public class ServerOutputThread extends Thread{
 	 private Socket clientSocket;
 
-	public OutputThread(Monitor monitor) {
+	public ServerOutputThread(Monitor monitor) {
 	}
 }

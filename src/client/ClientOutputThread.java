@@ -4,13 +4,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.Socket;
 
-public class OutputThread extends Thread {
+public class ClientOutputThread extends Thread {
 	private Monitor mon;
 	private Socket sock;
-	private InputThread input;
+	private ClientInputThread input;
 	private static final byte[] CRLF = { 13, 10 };
 
-	public OutputThread(Monitor mon, Socket sock, InputThread input) {
+	public ClientOutputThread(Monitor mon, Socket sock, ClientInputThread input) {
 		this.mon = mon;
 		this.sock = sock;
 		this.input = input;

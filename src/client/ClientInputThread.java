@@ -7,14 +7,14 @@ import java.util.ArrayList;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
-public class InputThread extends Thread {
+public class ClientInputThread extends Thread {
 	private Monitor mon;
 	private Socket sock;
 	private boolean expected;
 	private int orderNbr;
 	private byte[] jpeg;
 
-	public InputThread(Monitor mon, Socket sock, int orderNbr) {
+	public ClientInputThread(Monitor mon, Socket sock, int orderNbr) {
 		this.mon = mon;
 		this.sock = sock;
 		expected = false;

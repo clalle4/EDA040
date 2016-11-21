@@ -6,13 +6,15 @@ import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-public class InputThread extends Thread {
+public class ServerInputThread extends Thread {
 	private Monitor monitor;
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private OutputStream os;
+	private InputStream is;
+	private boolean firstTime = true;
 
-	public InputThread(Monitor mon, ServerSocket serverSocket) {
+	public ServerInputThread(Monitor mon, ServerSocket serverSocket) {
 		monitor = mon;
 		this.serverSocket = serverSocket;
 	}
@@ -20,12 +22,18 @@ public class InputThread extends Thread {
 	public void run() {
 		while (true) {
 			try {
+				if(firstTime){
 				clientSocket = serverSocket.accept();
-				InputStream is = clientSocket.getInputStream();
+				is = clientSocket.getInputStream();
 				os = clientSocket.getOutputStream();
+				firstTime = false;
+				}
 				// Read the request
 				String request = getLine(is);
 				
+				while(request.isEmpty()){
+					request = getLine(is);
+				}
 				System.out.println("HTTP request '" + request
 						+ "' received.");
 				// Interpret the request. Complain about everything but GET.

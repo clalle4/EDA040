@@ -9,9 +9,9 @@ public class Camera extends Thread{
 	private AxisM3006V myCamera;
 	private int port;
 	private Monitor monitor;
-	private InputThread input;
+	private ServerInputThread input;
 	private ServerSocket serverSocket;
-	private OutputThread output;
+	private ServerOutputThread output;
 	private byte[] jpeg;
 	
 	public Camera(int port){
@@ -26,9 +26,9 @@ public class Camera extends Thread{
 			e.printStackTrace();
 		}
 		monitor = new Monitor();
-		input = new InputThread(monitor, serverSocket);
+		input = new ServerInputThread(monitor, serverSocket);
 		input.start();
-		output = new OutputThread(monitor);
+		output = new ServerOutputThread(monitor);
 		output.start();
 	}
 	

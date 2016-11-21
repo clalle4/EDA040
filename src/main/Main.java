@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import Server.Camera;
+import server.Camera;
 import client.GUI;
 import client.InputThread;
 import client.Monitor;

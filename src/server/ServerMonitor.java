@@ -2,30 +2,36 @@ package server;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.net.Socket;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
-public class Monitor {
-	private byte[] jpegPICTURE;
-	private Socket clientSocket;
+public class ServerMonitor {
 	private OutputStream output;
 	private int len; 
 	private byte[] jpeg;
+	private boolean motionDetected;
 	// By convention, these bytes are always sent between lines
 	// (CR = 13 = carriage return, LF = 10 = line feed)
 	private static final byte[] CRLF = { 13, 10 };
 
 
+	public ServerMonitor(){
+		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+	}
 
 	synchronized public void handleRequest(OutputStream os) throws IOException {
 		output = os; 
 		putLine(output, "RECEIVE image");
-		putLine(output, "HTTP/1.0 200 OK");
-		putLine(output, "Image size: bla");
-		putLine(output, "bla bla");
-		putLine(output, ""); // Means 'end of header'
+		putLine(output, len+"");
+		String s;
+		if(motionDetected){
+			s = "Motion has been detected";
+		} else {
+			s = "Motion has not been detected";
+		}
+		putLine(output, s); // end of header
 		sendImage();
+		notifyAll();
 	}
 
 	/**
@@ -39,10 +45,16 @@ public class Monitor {
 
 	synchronized public void setImage(int len, byte[] jpeg){
 		this.len = len;
-		this.jpeg = jpeg;
+		System.arraycopy(jpeg, 0, this.jpeg, 0, len);
+		notifyAll();
 	}
 
-	synchronized public void sendImage() throws IOException{
-		output.write(jpeg, 0, len);		
+	synchronized private void sendImage() throws IOException{
+		output.write(jpeg, 0, len);
+	}
+
+	synchronized public void motionDetected(boolean motionDetected) {
+		this.motionDetected = motionDetected;
+		notifyAll();	
 	}
 }

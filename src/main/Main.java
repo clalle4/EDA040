@@ -7,13 +7,13 @@ import java.net.UnknownHostException;
 import server.Camera;
 import client.GUI;
 import client.ClientInputThread;
-import client.Monitor;
+import client.ClientMonitor;
 import client.ClientOutputThread;
 
 public class Main {
 
 	public static void main(String[] args) throws UnknownHostException, IOException {
-		Monitor mon = new Monitor();
+		ClientMonitor mon = new ClientMonitor();
 		Socket[] sock = new Socket[2];
 		ClientInputThread[] input = new ClientInputThread[2];
 		ClientOutputThread[] output = new ClientOutputThread[2];
@@ -25,9 +25,8 @@ public class Main {
 			sock[i] = new Socket(server, port);
 			input[i] = new ClientInputThread(mon, sock[i], i + 1);
 			output[i] = new ClientOutputThread(mon, sock[i], input[i]);
+			System.out.println("Operating at port: "+ port);
 		}
-//		GUI gui = new GUI(mon);
-//		gui.run();
 		for (ClientInputThread it : input) {
 			it.start();
 		}
@@ -37,6 +36,8 @@ public class Main {
 		for (Camera cam : camera) {
 			cam.start();
 		}
+		GUI gui = new GUI(mon);
+		gui.run();
 	}
 
 }

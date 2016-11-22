@@ -2,53 +2,56 @@ package client;
 
 import java.util.LinkedList;
 
-public class Monitor {
+public class ClientMonitor {
 	private LinkedList<byte[]> cam1Images;
 	private LinkedList<byte[]> cam2Images;
 	private boolean movieMode;
 	private String viewMode;
 
-	public Monitor() {
+	public ClientMonitor() {
 		cam1Images = new LinkedList<byte[]>();
 		cam2Images = new LinkedList<byte[]>();
 		movieMode = false;
 	}
 
 	public synchronized void addImage(byte[] image, int orderNbr) {
-		if(orderNbr == 1){
-			cam1Images.add(image);			
-		} else if (orderNbr == 2){
-			cam2Images.add(image);						
+		if (orderNbr == 1) {
+			cam1Images.add(image);
+		} else if (orderNbr == 2) {
+			cam2Images.add(image);
 		}
-		if(image[0] == 1){
-			changeMode(true);
-		}
+		notifyAll();
 	}
 
-	public synchronized void changeMode(boolean mode) {
+	public synchronized void setMovieMode(boolean mode) {
 		movieMode = mode;
+		notifyAll();
 	}
-	
+
 	public synchronized boolean movieMode() {
 		return movieMode;
 	}
-	
-	public synchronized void setViewMode(String mode){
+
+	public synchronized void setViewMode(String mode) {
 		viewMode = mode;
+		notifyAll();
 	}
-	
-	public synchronized String getViewMode(){
+
+	public synchronized String getViewMode() {
 		return viewMode;
 	}
-	
-	public synchronized LinkedList<byte[]> getImages(){
+
+	public synchronized LinkedList<byte[]> getImages() {
+		while (cam1Images.isEmpty() || cam2Images.isEmpty()) {
+			try {
+				wait();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
 		LinkedList<byte[]> images = new LinkedList<byte[]>();
-		try{
 		images.add(cam1Images.remove(0));
 		images.add(cam2Images.remove(0));
-		}catch(NullPointerException e){
-			System.out.println("Missing image from one or both cameras");
-		}
 		return images;
 	}
 }

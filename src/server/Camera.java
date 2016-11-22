@@ -5,17 +5,15 @@ import java.net.ServerSocket;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
-public class Camera extends Thread{
+public class Camera extends Thread {
 	private AxisM3006V myCamera;
-	private int port;
-	private Monitor monitor;
+	private ServerMonitor serverMonitor;
 	private ServerInputThread input;
 	private ServerSocket serverSocket;
 	private ServerOutputThread output;
 	private byte[] jpeg;
-	
-	public Camera(int port){
-		this.port = port;
+
+	public Camera(int port) {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
 		myCamera = new AxisM3006V();
 		myCamera.init();
@@ -25,21 +23,22 @@ public class Camera extends Thread{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		monitor = new Monitor();
-		input = new ServerInputThread(monitor, serverSocket);
+		serverMonitor = new ServerMonitor();
+		input = new ServerInputThread(serverMonitor, serverSocket);
 		input.start();
-		output = new ServerOutputThread(monitor);
+		output = new ServerOutputThread(serverMonitor);
 		output.start();
 	}
-	
-	public void run(){
-		
+
+	public void run() {
+		while(true){
 		if (!myCamera.connect()) {
 			System.out.println("Failed to connect to camera!");
 			System.exit(1);
 		}
+		serverMonitor.motionDetected(myCamera.motionDetected());
 		int len = myCamera.getJPEG(jpeg, 0);
-		monitor.setImage(len, jpeg);
+		serverMonitor.setImage(len, jpeg);
+		}
 	}
-	}
-
+}

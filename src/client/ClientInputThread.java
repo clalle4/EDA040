@@ -3,79 +3,61 @@ package client;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
 public class ClientInputThread extends Thread {
-	private Monitor mon;
+	private ClientMonitor mon;
 	private Socket sock;
 	private boolean expected;
 	private int orderNbr;
 	private byte[] jpeg;
-
-	public ClientInputThread(Monitor mon, Socket sock, int orderNbr) {
+	private int imageLength;
+	private InputStream is;
+	private boolean motionDetected;
+	
+	public ClientInputThread(ClientMonitor mon, Socket sock, int orderNbr) {
 		this.mon = mon;
 		this.sock = sock;
 		expected = false;
 		this.orderNbr = orderNbr;
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+		motionDetected = false;
 	}
 
 	public void run() {
+		
 		// vänta på att ta emot bild
 		while (true) {
-
+			System.out.println("Entered client inputThread");
 			try {
-				InputStream is = sock.getInputStream();
-
-				// Read the response
+					is = sock.getInputStream();
+				
+				// Read the header
 				String responseLine = getLine(is);
+				imageLength = Integer.parseInt(getLine(is));
+				String state = getLine(is); //end of header
+				if(state.equals("Motion has been detected")){
+					motionDetected = true;
+				}
 
-				// The request is followed by some additional header lines,
-				// followed by a blank line.
-				String header;
-				boolean cont;
-				do {
-					// TODO do something with the header
-					header = getLine(is);
-					System.out.println(header); // TODO delete me
-					cont = !(header.equals(""));
-				} while (cont);
+				System.out.println("HTTP request " + responseLine + " received.");
 
-				System.out.println("HTTP request '" + responseLine + "' received.");
-
-				// Now load the JPEG image.
-				int bufferSize = jpeg.length;
-				int bytesRead = 0;
-				int bytesLeft = bufferSize;
-				int status;
-
-				// We have to keep reading until -1 (meaning "end of file") is
-				// returned. The socket (which the stream is connected to)
-				// does not wait until all data is available; instead it
-				// returns if nothing arrived for some (short) time.
-				do {
-					status = is.read(jpeg, bytesRead, bytesLeft);
-					// The 'status' variable now holds the no. of bytes read,
-					// or -1 if no more data is available
-					if (status > 0) {
-						bytesRead += status;
-						bytesLeft -= status;
-					}
-				} while (status >= 0);
-				System.out.println("Received image data (" + bytesRead + " bytes).");
-				// Interpret the request. Complain about everything but RECEIVE.
-				// Ignore the file name.
+				int read = 0;
+				while (read < imageLength) {
+					int n = is.read(jpeg, read, imageLength-read); // Blocking
+					if (n == -1) throw new IOException();
+					read += n;
+					};
+				System.out.println("Received image data (" + read + " bytes).");
 
 				if (responseLine.substring(0, 8).equals("RECEIVE ")) {
-
 					// skicka bild till monitor
 					mon.addImage(jpeg, orderNbr);
 				}
 
-				if (!expected) {
-					mon.changeMode(true);
+				if (!expected || motionDetected) {
+					mon.setMovieMode(true);
 				}
 				expected = false;
 			} catch (IOException e) {

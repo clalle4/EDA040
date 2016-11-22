@@ -7,15 +7,15 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerInputThread extends Thread {
-	private Monitor monitor;
+	private ServerMonitor serverMonitor;
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private OutputStream os;
 	private InputStream is;
 	private boolean firstTime = true;
 
-	public ServerInputThread(Monitor mon, ServerSocket serverSocket) {
-		monitor = mon;
+	public ServerInputThread(ServerMonitor mon, ServerSocket serverSocket) {
+		serverMonitor = mon;
 		this.serverSocket = serverSocket;
 	}
 
@@ -40,9 +40,8 @@ public class ServerInputThread extends Thread {
 				// Ignore the file name.
 				if (request.substring(0, 4).equals("GET ")) {
 					// Got a GET request.
-					monitor.handleRequest(os);
+					serverMonitor.handleRequest(os);
 				}
-				InputStream input = clientSocket.getInputStream();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

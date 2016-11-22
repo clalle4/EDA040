@@ -5,18 +5,19 @@ import java.io.OutputStream;
 import java.net.Socket;
 
 public class ClientOutputThread extends Thread {
-	private Monitor mon;
+	private ClientMonitor mon;
 	private Socket sock;
 	private ClientInputThread input;
 	private static final byte[] CRLF = { 13, 10 };
 
-	public ClientOutputThread(Monitor mon, Socket sock, ClientInputThread input) {
+	public ClientOutputThread(ClientMonitor mon, Socket sock, ClientInputThread input) {
 		this.mon = mon;
 		this.sock = sock;
 		this.input = input;
 	}
 
 	public void run() {
+		
 		while (true) {
 			// varje x sekund: skicka request till server
 
@@ -24,7 +25,6 @@ public class ClientOutputThread extends Thread {
 				try {
 					Thread.sleep(5000);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -34,7 +34,6 @@ public class ClientOutputThread extends Thread {
 				sendRequest(os);
 				input.setExpected();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 
@@ -47,7 +46,6 @@ public class ClientOutputThread extends Thread {
 			putLine(os, "GET /image.jpg HTTP/1.0");
 			putLine(os, ""); // The request ends with an empty line
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

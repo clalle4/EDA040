@@ -6,13 +6,14 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.LinkedList;
+
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.SwingUtilities;
-import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
 public class GUI extends JFrame implements Runnable {
 
@@ -23,10 +24,13 @@ public class GUI extends JFrame implements Runnable {
 	private JComboBox<String> viewBox;
 	private final String[] viewOptions;
 	private final String[] cameraOptions;
+	private ClientMonitor mon;
+	private JTextArea cameraModeJTA;
 
-	public GUI(Monitor mon) {
+	public GUI(ClientMonitor mon) {
 		super();
-		cameraOptions = new String[] { "Auto", "Idel", "Movie" };
+		this.mon = mon;
+		cameraOptions = new String[] { "Auto", "Idle", "Movie" };
 		viewOptions = new String[] { "Auto", "Synchronous", "Asynchronous" };
 		cameraBox = new JComboBox<>(cameraOptions);
 		cameraBox.addActionListener(new cameraBoxListener());
@@ -37,7 +41,7 @@ public class GUI extends JFrame implements Runnable {
 		icon1 = new ImageIcon();
 		icon2 = new ImageIcon();
 
-		JPanel namePanel = new JPanel(new GridLayout(1,2));
+		JPanel namePanel = new JPanel(new GridLayout(1, 2));
 		Font f = new Font("TimesRoman", Font.ITALIC, 25);
 		JTextArea name1 = new JTextArea("Camera 1");
 		name1.setFont(f);
@@ -57,7 +61,7 @@ public class GUI extends JFrame implements Runnable {
 		jta.setEditable(false);
 		jta.setFont(font);
 		modePanel.add(jta);
-		JTextArea cameraModeJTA = new JTextArea("Current camera mode: Movie");
+		cameraModeJTA = new JTextArea("Current camera mode: Idle");
 		cameraModeJTA.setEditable(false);
 		cameraModeJTA.setFont(font);
 		modePanel.add(cameraModeJTA);
@@ -78,49 +82,57 @@ public class GUI extends JFrame implements Runnable {
 	}
 
 	public void run() {
-		AxisM3006V cam = new AxisM3006V();
-		cam.init();
-		cam.connect();
-		for (int i = 0; i < 1000; i++) {
-			byte[] jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
-			cam.getJPEG(jpeg, 0);
+		while (true) {
 			SwingUtilities.invokeLater(new Runnable() {
 				public void run() {
-					refreshImage(jpeg);
+					String s = "Current camera mode: ";
+					if (mon.movieMode()) {
+						s += "Movie";
+					} else {
+						s += "Idle";
+					}
+					cameraModeJTA.setText(s);
+					LinkedList<byte[]> images = mon.getImages();
+					refreshImage(images);
 				}
 			});
 		}
-		cam.close();
-		cam.destroy();
 	}
 
-	public void refreshImage(byte[] jpeg) {
-		Image image = getToolkit().createImage(jpeg);
-		getToolkit().prepareImage(image, -1, -1, null);
-		icon1.setImage(image);
+	public void refreshImage(LinkedList<byte[]> images) {
+		System.out.println("refreshed...............................................");
+		Image image1 = getToolkit().createImage(images.get(0));
+		getToolkit().prepareImage(image1, -1, -1, null);
+		Image image2 = getToolkit().createImage(images.get(1));
+		getToolkit().prepareImage(image2, -1, -1, null);
+		icon1.setImage(image1);
 		icon1.paintIcon(this, this.getGraphics(), 640, 80);
-		icon2.setImage(image);
+		icon2.setImage(image2);
 		icon2.paintIcon(this, this.getGraphics(), 0, 80);
 	}
-	
 
-	private class cameraBoxListener implements ActionListener{
+	private class cameraBoxListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			@SuppressWarnings("unchecked")
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
-            String mode = (String)combo.getSelectedItem();
-            System.out.println(mode);
+			String mode = (String) combo.getSelectedItem();
+			if (mode.equals("Movie")) {
+				mon.setMovieMode(true);
+			} else if (mode.equals("Idle")) {
+				mon.setMovieMode(false);
+			}
+			System.out.println(mode);
 		}
 	}
-	
-	private class viewBoxListener implements ActionListener{
+
+	private class viewBoxListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			@SuppressWarnings("unchecked")
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
-            String mode = (String)combo.getSelectedItem();
-            System.out.println(mode);
+			String mode = (String) combo.getSelectedItem();
+			System.out.println(mode);
 		}
 	}
 }

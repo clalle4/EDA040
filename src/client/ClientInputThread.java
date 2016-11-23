@@ -29,7 +29,6 @@ public class ClientInputThread extends Thread {
 		
 		// vänta på att ta emot bild
 		while (true) {
-			System.out.println("Entered client inputThread");
 			try {
 					is = sock.getInputStream();
 				

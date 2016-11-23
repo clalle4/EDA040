@@ -82,9 +82,9 @@ public class GUI extends JFrame implements Runnable {
 	}
 
 	public void run() {
-		while (true) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				while (true) {
 					String s = "Current camera mode: ";
 					if (mon.movieMode()) {
 						s += "Movie";
@@ -95,12 +95,11 @@ public class GUI extends JFrame implements Runnable {
 					LinkedList<byte[]> images = mon.getImages();
 					refreshImage(images);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	public void refreshImage(LinkedList<byte[]> images) {
-		System.out.println("refreshed...............................................");
 		Image image1 = getToolkit().createImage(images.get(0));
 		getToolkit().prepareImage(image1, -1, -1, null);
 		Image image2 = getToolkit().createImage(images.get(1));

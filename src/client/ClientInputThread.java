@@ -54,9 +54,9 @@ public class ClientInputThread extends Thread {
 					// skicka bild till monitor
 					mon.addImage(jpeg, orderNbr);
 				}
-
-				if (!expected || motionDetected) {
-					mon.setMovieMode(true);
+				//TODO ((!expected || motionDetected) && auto)
+				if ((!expected || motionDetected) && mon.getCameraMode() == ClientMonitor.AUTO) {
+					mon.setCameraMode(ClientMonitor.MOVIE);
 				}
 				expected = false;
 			} catch (IOException e) {

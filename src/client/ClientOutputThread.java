@@ -20,7 +20,6 @@ public class ClientOutputThread extends Thread {
 		
 		while (true) {
 			// varje x sekund: skicka request till server
-
 			if (!mon.movieMode()) {
 				try {
 					Thread.sleep(5000);

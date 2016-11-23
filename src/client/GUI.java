@@ -116,13 +116,8 @@ public class GUI extends JFrame implements Runnable {
 		public void actionPerformed(ActionEvent e) {
 			@SuppressWarnings("unchecked")
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
-			String mode = (String) combo.getSelectedItem();
-			if (mode.equals("Movie")) {
-				mon.setMovieMode(true);
-			} else if (mode.equals("Idle")) {
-				mon.setMovieMode(false);
-			}
-			System.out.println(mode);
+			int cameraMode = combo.getSelectedIndex();
+			mon.setCameraMode(cameraMode);
 		}
 	}
 

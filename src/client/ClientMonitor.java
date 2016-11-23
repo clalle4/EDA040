@@ -15,6 +15,7 @@ public class ClientMonitor {
 	}
 
 	public synchronized void addImage(byte[] image, int orderNbr) {
+		System.out.println(cam1Images.size() +"                    "+ cam2Images.size());
 		if (orderNbr == 1) {
 			cam1Images.add(image);
 		} else if (orderNbr == 2) {

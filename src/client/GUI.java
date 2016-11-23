@@ -81,6 +81,7 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
+	//TODO combobox can not be tricked as we have while(true)
 	public void run() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {

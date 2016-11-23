@@ -19,6 +19,7 @@ public class ServerMonitor {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
 	}
 
+	//TODO move to outputthread?
 	synchronized public void handleRequest(OutputStream os) throws IOException {
 		output = os; 
 		putLine(output, "RECEIVE image");

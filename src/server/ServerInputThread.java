@@ -30,7 +30,7 @@ public class ServerInputThread extends Thread {
 				}
 				// Read the request
 				String request = getLine(is);
-				
+				//TODO busy wait?
 				while(request.isEmpty()){
 					request = getLine(is);
 				}

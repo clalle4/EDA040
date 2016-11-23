@@ -7,6 +7,9 @@ public class ClientMonitor {
 	private LinkedList<byte[]> cam2Images;
 	private boolean movieMode;
 	private String viewMode;
+	public static final int AUTO = 0;
+	public static final int IDLE = 1;
+	public static final int MOVIE = 2;
 
 	public ClientMonitor() {
 		cam1Images = new LinkedList<byte[]>();

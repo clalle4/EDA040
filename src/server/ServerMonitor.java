@@ -38,6 +38,7 @@ public class ServerMonitor {
 	
 	synchronized public void gotARequest(boolean gotARequest){
 		this.gotARequest = gotARequest;
+		notifyAll();
 	}
 
 	synchronized public boolean checkIfGotARequest(){

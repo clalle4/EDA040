@@ -84,7 +84,7 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
-	// TODO combobox can not be tricked as we have while(true)
+	// TODO All components are locked while the thread is running! 
 	public void run() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -98,7 +98,6 @@ public class GUI extends JFrame implements Runnable {
 	}
 
 	private void updateText() {
-
 		String s = "Current camera mode: ";
 		if (mon.movieMode()) {
 			s += "Movie";

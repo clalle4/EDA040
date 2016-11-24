@@ -14,7 +14,7 @@ public class ClientMonitor {
 	public ClientMonitor() {
 		cam1Images = new LinkedList<byte[]>();
 		cam2Images = new LinkedList<byte[]>();
-		cameraMode = ClientMonitor.IDLE;
+		cameraMode = ClientMonitor.AUTO;
 	}
 
 	public synchronized void addImage(byte[] image, int orderNbr) {

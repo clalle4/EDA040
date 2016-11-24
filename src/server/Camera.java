@@ -24,10 +24,10 @@ public class Camera extends Thread {
 			e.printStackTrace();
 		}
 		serverMonitor = new ServerMonitor();
-		input = new ServerInputThread(serverMonitor, serverSocket);
-		input.start();
 		output = new ServerOutputThread(serverMonitor);
 		output.start();
+		input = new ServerInputThread(serverMonitor, serverSocket, output);
+		input.start();
 	}
 
 	public void run() {

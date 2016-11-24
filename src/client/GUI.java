@@ -32,15 +32,18 @@ public class GUI extends JFrame implements Runnable {
 		this.mon = mon;
 		cameraOptions = new String[] { "Auto", "Idle", "Movie" };
 		viewOptions = new String[] { "Auto", "Synchronous", "Asynchronous" };
+		icon1 = new ImageIcon();
+		icon2 = new ImageIcon();
+		init();
+	}
+
+	private void init() {
 		cameraBox = new JComboBox<>(cameraOptions);
 		cameraBox.addActionListener(new cameraBoxListener());
 		viewBox = new JComboBox<>(viewOptions);
 		viewBox.addActionListener(new viewBoxListener());
 
 		getContentPane().setLayout(new BorderLayout());
-		icon1 = new ImageIcon();
-		icon2 = new ImageIcon();
-
 		JPanel namePanel = new JPanel(new GridLayout(1, 2));
 		Font f = new Font("TimesRoman", Font.ITALIC, 25);
 		JTextArea name1 = new JTextArea("Camera 1");
@@ -81,18 +84,12 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
-	//TODO combobox can not be tricked as we have while(true)
+	// TODO combobox can not be tricked as we have while(true)
 	public void run() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				while (true) {
-					String s = "Current camera mode: ";
-					if (mon.movieMode()) {
-						s += "Movie";
-					} else {
-						s += "Idle";
-					}
-					cameraModeJTA.setText(s);
+					updateText();
 					LinkedList<byte[]> images = mon.getImages();
 					refreshImage(images);
 				}
@@ -100,7 +97,18 @@ public class GUI extends JFrame implements Runnable {
 		});
 	}
 
-	public void refreshImage(LinkedList<byte[]> images) {
+	private void updateText() {
+
+		String s = "Current camera mode: ";
+		if (mon.movieMode()) {
+			s += "Movie";
+		} else {
+			s += "Idle";
+			cameraModeJTA.setText(s);
+		}
+	}
+
+	private void refreshImage(LinkedList<byte[]> images) {
 		Image image1 = getToolkit().createImage(images.get(0));
 		getToolkit().prepareImage(image1, -1, -1, null);
 		Image image2 = getToolkit().createImage(images.get(1));

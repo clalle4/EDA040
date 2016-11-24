@@ -23,8 +23,8 @@ public class Main {
 			int port = 8011 + i;
 			camera[i] = new Camera(port);
 			sock[i] = new Socket(server, port);
-			input[i] = new ClientInputThread(mon, sock[i], i + 1);
-			output[i] = new ClientOutputThread(mon, sock[i], input[i]);
+			output[i] = new ClientOutputThread(mon, sock[i]);
+			input[i] = new ClientInputThread(mon, sock[i], i + 1, output[i]);
 			System.out.println("Operating at port: "+ port);
 		}
 		for (ClientInputThread it : input) {
@@ -36,6 +36,7 @@ public class Main {
 		for (Camera cam : camera) {
 			cam.start();
 		}
+
 		GUI gui = new GUI(mon);
 		gui.run();
 	}

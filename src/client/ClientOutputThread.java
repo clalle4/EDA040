@@ -7,28 +7,28 @@ import java.net.Socket;
 public class ClientOutputThread extends Thread {
 	private ClientMonitor mon;
 	private Socket sock;
-	private ClientInputThread input;
 	private static final byte[] CRLF = { 13, 10 };
 
-	public ClientOutputThread(ClientMonitor mon, Socket sock, ClientInputThread input) {
+	public ClientOutputThread(ClientMonitor mon, Socket sock) {
 		this.mon = mon;
 		this.sock = sock;
-		this.input = input;
 	}
 
 	public void run() {
-		
+
 		while (true) {
 			// varje x sekund: skicka request till server
 			if (!mon.movieMode()) {
 				try {
-					Thread.sleep(5000);
+					synchronized (this) {
+						this.wait(5000);
+					}
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			} else {
 				try {
-					Thread.sleep(50);  //20 FPS
+					Thread.sleep(50); // 20 FPS
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
@@ -37,7 +37,6 @@ public class ClientOutputThread extends Thread {
 			try {
 				OutputStream os = sock.getOutputStream();
 				sendRequest(os);
-				input.setExpected();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

@@ -12,11 +12,15 @@ public class ServerInputThread extends Thread {
 	private Socket clientSocket;
 	private OutputStream os;
 	private InputStream is;
-	private boolean firstTime = true;
+	private boolean firstTime;
+	private ServerOutputThread outputThread;
+	
 
-	public ServerInputThread(ServerMonitor mon, ServerSocket serverSocket) {
+	public ServerInputThread(ServerMonitor mon, ServerSocket serverSocket, ServerOutputThread outputThread) {
 		serverMonitor = mon;
 		this.serverSocket = serverSocket;
+		this.outputThread = outputThread;
+		firstTime = true;
 	}
 
 	public void run() {
@@ -26,6 +30,7 @@ public class ServerInputThread extends Thread {
 				clientSocket = serverSocket.accept();
 				is = clientSocket.getInputStream();
 				os = clientSocket.getOutputStream();
+				outputThread.setOutputStream(os);
 				firstTime = false;
 				}
 				// Read the request
@@ -40,7 +45,7 @@ public class ServerInputThread extends Thread {
 				// Ignore the file name.
 				if (request.substring(0, 4).equals("GET ")) {
 					// Got a GET request.
-					serverMonitor.handleRequest(os);
+					serverMonitor.gotARequest(true);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

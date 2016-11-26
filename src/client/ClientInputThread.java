@@ -13,16 +13,12 @@ public class ClientInputThread extends Thread {
 	private byte[] jpeg;
 	private int imageLength;
 	private InputStream is;
-	private boolean motionDetected;
-	private ClientOutputThread outputThread;
 
-	public ClientInputThread(ClientMonitor mon, Socket sock, int orderNbr, ClientOutputThread outputThread) {
+	public ClientInputThread(ClientMonitor mon, Socket sock, int orderNbr) {
 		this.mon = mon;
 		this.sock = sock;
-		this.outputThread = outputThread;
 		this.orderNbr = orderNbr;
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
-		motionDetected = false;
 	}
 
 	public void run() {
@@ -34,20 +30,12 @@ public class ClientInputThread extends Thread {
 				// Read the header
 				String responseLine = getLine(is);
 				System.out.println("HTTP request " + responseLine + " received.");
-				
-				//TODO check also if cameraMode is auto
-				if(responseLine.equals("Switch to Movie mode!")){
-					mon.setCameraMode(ClientMonitor.MOVIE);
-					synchronized(outputThread){
-					outputThread.notifyAll();
-					}
+				if(responseLine.equals("Switch to Movie mode!") && mon.getCameraMode() == ClientMonitor.AUTO){
+					mon.setMotionDetected(true);
+					
 				} else if (responseLine.substring(0, 8).equals("RECEIVE ")) {
 					imageLength = Integer.parseInt(getLine(is));
 					String state = getLine(is); // end of header
-					if (state.equals("Motion has been detected")) {
-						motionDetected = true;
-					}
-
 					int read = 0;
 					while (read < imageLength) {
 						int n = is.read(jpeg, read, imageLength - read); // Blocking
@@ -58,10 +46,6 @@ public class ClientInputThread extends Thread {
 					System.out.println("Received image data (" + read + " bytes).");
 					// skicka bild till monitor
 					mon.addImage(jpeg, orderNbr);
-				}
-
-				if (motionDetected && mon.getCameraMode() == ClientMonitor.AUTO) {
-					mon.setCameraMode(ClientMonitor.MOVIE);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

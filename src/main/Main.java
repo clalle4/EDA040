@@ -24,7 +24,8 @@ public class Main {
 			camera[i] = new Camera(port);
 			sock[i] = new Socket(server, port);
 			output[i] = new ClientOutputThread(mon, sock[i]);
-			input[i] = new ClientInputThread(mon, sock[i], i + 1, output[i]);
+			input[i] = new ClientInputThread(mon, sock[i], i + 1);
+			mon.addOutputThread(output[i]);
 			System.out.println("Operating at port: "+ port);
 		}
 		for (ClientInputThread it : input) {

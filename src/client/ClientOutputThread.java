@@ -15,10 +15,11 @@ public class ClientOutputThread extends Thread {
 	}
 
 	public void run() {
+		
 
 		while (true) {
 			// varje x sekund: skicka request till server
-			if (!mon.movieMode()) {
+			if (!mon.motionDetected()) {
 				try {
 					synchronized (this) {
 						this.wait(5000);

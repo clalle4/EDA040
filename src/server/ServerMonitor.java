@@ -45,7 +45,6 @@ public class ServerMonitor {
 		return gotARequest;
 	}
 
-
 	synchronized public void motionDetected(boolean motionDetected) {
 		this.motionDetected = motionDetected;
 		notifyAll();	

@@ -24,6 +24,7 @@ public class ServerOutputThread extends Thread {
 
 	public void run() {
 		while (true) {
+			
 			motionDetected = mon.motionHasBeenDetected();
 			boolean gotARequest = mon.checkIfGotARequest();
 			if (motionDetected && sendSwitchResponse) {

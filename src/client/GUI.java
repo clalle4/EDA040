@@ -107,7 +107,7 @@ public class GUI extends JFrame implements Runnable {
 
 	private void updateText() {
 		String s = "Current camera mode: ";
-		if (mon.movieMode()) {
+		if (mon.motionDetected()) {
 			s += "Movie";
 		} else {
 			s += "Idle";

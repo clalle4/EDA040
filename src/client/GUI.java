@@ -84,18 +84,26 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
-	// TODO All components are locked while the thread is running! 
+	// TODO All components are locked while the thread is running!
 	public void run() {
+		UpdatingThread updatingThread = new UpdatingThread();
+		updatingThread.start();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
-				while (true) {
-					updateText();
-					LinkedList<byte[]> images = mon.getImages();
-					refreshImage(images);
-				}
+				init();
 			}
 		});
 	}
+
+	// SwingUtilities.invokeLater(new Runnable() {
+	// public void run() {
+	// while (true) {
+	// updateText();
+	// LinkedList<byte[]> images = mon.getImages();
+	// refreshImage(images);
+	// }
+	// }
+	// });
 
 	private void updateText() {
 		String s = "Current camera mode: ";
@@ -135,6 +143,16 @@ public class GUI extends JFrame implements Runnable {
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
 			String mode = (String) combo.getSelectedItem();
 			System.out.println(mode);
+		}
+	}
+
+	private class UpdatingThread extends Thread {
+		public void run() {
+			while (true) {
+				updateText();
+				LinkedList<byte[]> images = mon.getImages();
+				refreshImage(images);
+			}
 		}
 	}
 }

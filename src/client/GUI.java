@@ -6,7 +6,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.LinkedList;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComboBox;
@@ -144,7 +143,7 @@ public class GUI extends JFrame implements Runnable {
 			@SuppressWarnings("unchecked")
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
 			String mode = (String) combo.getSelectedItem();
-			System.out.println(mode);
+			mon.setViewMode(mode);
 		}
 	}
 
@@ -152,8 +151,12 @@ public class GUI extends JFrame implements Runnable {
 		public void run() {
 			while (true) {
 				updateText();
-				refreshImage(mon.getCam1Image(), 1);
-				refreshImage(mon.getCam2Image(), 2);
+				try {
+					refreshImage(mon.getCam1Image(), 1);
+					refreshImage(mon.getCam2Image(), 2);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

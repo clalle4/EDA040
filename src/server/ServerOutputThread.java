@@ -10,6 +10,7 @@ public class ServerOutputThread extends Thread {
 	private OutputStream os;
 	private boolean motionDetected;
 	private byte[] jpeg;
+	private byte[] time;
 	private boolean sendSwitchResponse;
 	// By convention, these bytes are always sent between lines
 	// (CR = 13 = carriage return, LF = 10 = line feed)
@@ -18,6 +19,7 @@ public class ServerOutputThread extends Thread {
 	public ServerOutputThread(ServerMonitor serverMonitor) {
 		mon = serverMonitor;
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+		time = new byte[AxisM3006V.TIME_ARRAY_SIZE];
 		motionDetected = false;
 	}
 
@@ -37,6 +39,7 @@ public class ServerOutputThread extends Thread {
 				sendSwitchResponse = false;
 			} else if (gotARequest) {
 				jpeg = mon.getImage();
+				time = mon.getTime();
 				int len = mon.getImageLength();
 				try {
 					putLine(os, "RECEIVE image");
@@ -47,7 +50,8 @@ public class ServerOutputThread extends Thread {
 					} else {
 						s = "Motion has not been detected";
 					}
-					putLine(os, s); // end of header
+					putLine(os, s); 
+					os.write(time); // end of header
 					os.write(jpeg, 0, len); // send the image
 				} catch (IOException e) {
 					System.out.println("Failed to send RECEIVE response");

@@ -5,6 +5,7 @@ import se.lth.cs.eda040.fakecamera.AxisM3006V;
 public class ServerMonitor {
 	private int len;
 	private byte[] jpeg;
+	private byte[] time;
 	private boolean motionDetected;
 	private boolean gotARequest;
 	private boolean runningInMovieMode;
@@ -15,6 +16,7 @@ public class ServerMonitor {
 
 	public ServerMonitor() {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+		time = new byte[AxisM3006V.TIME_ARRAY_SIZE];
 	}
 
 	/**
@@ -27,6 +29,11 @@ public class ServerMonitor {
 		System.arraycopy(jpeg, 0, this.jpeg, 0, len);
 		notifyAll();
 	}
+	
+	synchronized public void setTime(byte[] time){
+		System.arraycopy(time, 0, this.time, 0, AxisM3006V.TIME_ARRAY_SIZE);
+		notifyAll();
+	}
 
 	synchronized public byte[] getImage() {
 		return jpeg;
@@ -34,6 +41,10 @@ public class ServerMonitor {
 
 	synchronized public int getImageLength() {
 		return len;
+	}
+	
+	synchronized public byte[] getTime(){
+		return time;
 	}
 
 	synchronized public void gotARequest(boolean gotARequest) {
@@ -67,8 +78,7 @@ public class ServerMonitor {
 		this.cameraControl = cameraControl;
 		notifyAll();
 	}
-
-	// TODO fix
+	
 	synchronized public void waitForRequest() {
 		try {
 			if (cameraControl.equals("Auto")) {

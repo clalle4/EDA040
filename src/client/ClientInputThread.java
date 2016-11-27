@@ -11,6 +11,7 @@ public class ClientInputThread extends Thread {
 	private Socket sock;
 	private int orderNbr;
 	private byte[] jpeg;
+	private byte[] time;
 	private int imageLength;
 	private InputStream is;
 
@@ -19,6 +20,7 @@ public class ClientInputThread extends Thread {
 		this.sock = sock;
 		this.orderNbr = orderNbr;
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+		time = new byte[AxisM3006V.TIME_ARRAY_SIZE];
 	}
 
 	public void run() {
@@ -35,8 +37,17 @@ public class ClientInputThread extends Thread {
 					
 				} else if (responseLine.substring(0, 8).equals("RECEIVE ")) {
 					imageLength = Integer.parseInt(getLine(is));
-					String state = getLine(is); // end of header
+					String state = getLine(is); 
+					//get the time
 					int read = 0;
+					while (read < AxisM3006V.TIME_ARRAY_SIZE) {
+						int n = is.read(time, read, AxisM3006V.TIME_ARRAY_SIZE - read); // Blocking
+						if (n == -1)
+							throw new IOException();
+						read += n;
+					} // end of header
+					//get the image
+					read = 0;
 					while (read < imageLength) {
 						int n = is.read(jpeg, read, imageLength - read); // Blocking
 						if (n == -1)
@@ -45,7 +56,8 @@ public class ClientInputThread extends Thread {
 					}
 					System.out.println("Received image data (" + read + " bytes).");
 					// skicka bild till monitor
-					mon.addImage(jpeg, orderNbr);
+					Image image = new Image(jpeg, time);
+					mon.addImage(image, orderNbr);
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

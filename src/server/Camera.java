@@ -12,9 +12,11 @@ public class Camera extends Thread {
 	private ServerSocket serverSocket;
 	private ServerOutputThread output;
 	private byte[] jpeg;
+	private byte[] time;
 
 	public Camera(int port) {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
+		time = new byte[AxisM3006V.TIME_ARRAY_SIZE];
 		myCamera = new AxisM3006V();
 		myCamera.init();
 		myCamera.setProxy("argus-1.student.lth.se", port);
@@ -39,6 +41,8 @@ public class Camera extends Thread {
 		serverMonitor.motionDetected(myCamera.motionDetected());
 		int len = myCamera.getJPEG(jpeg, 0);
 		serverMonitor.setImage(len, jpeg);
+		myCamera.getTime(time, 0);
+		serverMonitor.setTime(time);
 		}
 	}
 }

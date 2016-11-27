@@ -115,15 +115,17 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 
-	private void refreshImage(LinkedList<byte[]> images) {
-		Image image1 = getToolkit().createImage(images.get(0));
-		getToolkit().prepareImage(image1, -1, -1, null);
-		Image image2 = getToolkit().createImage(images.get(1));
-		getToolkit().prepareImage(image2, -1, -1, null);
-		icon1.setImage(image1);
-		icon1.paintIcon(this, this.getGraphics(), 640, 80);
-		icon2.setImage(image2);
-		icon2.paintIcon(this, this.getGraphics(), 0, 80);
+	private void refreshImage(byte[] img, int cameraNbr) {
+		Image image = getToolkit().createImage(img);
+		getToolkit().prepareImage(image, -1, -1, null);
+		if(cameraNbr == 1){
+			icon1.setImage(image);
+			icon1.paintIcon(this, this.getGraphics(), 0, 80);
+		} else if(cameraNbr == 2){
+			icon2.setImage(image);
+			icon2.paintIcon(this, this.getGraphics(), 640, 80);
+			
+		}
 	}
 
 	private class cameraBoxListener implements ActionListener {
@@ -150,8 +152,8 @@ public class GUI extends JFrame implements Runnable {
 		public void run() {
 			while (true) {
 				updateText();
-				LinkedList<byte[]> images = mon.getImages();
-				refreshImage(images);
+				refreshImage(mon.getCam1Image(), 1);
+				refreshImage(mon.getCam2Image(), 2);
 			}
 		}
 	}

@@ -7,7 +7,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerInputThread extends Thread {
-	private ServerMonitor serverMonitor;
+	private ServerMonitor mon;
 	private ServerSocket serverSocket;
 	private Socket clientSocket;
 	private OutputStream os;
@@ -17,7 +17,7 @@ public class ServerInputThread extends Thread {
 	
 
 	public ServerInputThread(ServerMonitor mon, ServerSocket serverSocket, ServerOutputThread outputThread) {
-		serverMonitor = mon;
+		this.mon = mon;
 		this.serverSocket = serverSocket;
 		this.outputThread = outputThread;
 		firstTime = true;
@@ -39,13 +39,27 @@ public class ServerInputThread extends Thread {
 				while(request.isEmpty()){
 					request = getLine(is);
 				}
-				System.out.println("HTTP request '" + request
+				System.out.println("Client request '" + request
 						+ "' received.");
 				// Interpret the request. Complain about everything but GET.
 				// Ignore the file name.
 				if (request.substring(0, 4).equals("GET ")) {
 					// Got a GET request.
-					serverMonitor.gotARequest(true);
+					mon.gotARequest(true);
+					String cameraMode = getLine(is);
+					System.out.println(cameraMode);
+					String s = cameraMode.substring(13, cameraMode.indexOf(" ("));
+					if(s.equals("Movie")){
+						mon.runningInMovieMode(true);
+					} else {
+						mon.runningInMovieMode(false);
+					}
+					s = cameraMode.substring(cameraMode.indexOf("(") + 1 , cameraMode.length() - 1);
+					if(s.equals("Auto")){
+						mon.setCameraControl("Auto");
+					} else {
+						mon.setCameraControl("Manual");
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();

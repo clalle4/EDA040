@@ -25,15 +25,16 @@ public class ServerOutputThread extends Thread {
 	public void run() {
 		while (true) {
 			
-			motionDetected = mon.motionHasBeenDetected();
+			motionDetected = mon.motionDetected();
 			boolean gotARequest = mon.checkIfGotARequest();
-			if (motionDetected && sendSwitchResponse) {
+			mon.waitForRequest();
+			if (sendSwitchResponse && motionDetected) {
 				try {
 					putLine(os, "Switch to Movie mode!");
-					sendSwitchResponse = false;
 				} catch (IOException e) {
-					e.printStackTrace();
+					System.out.println("Failed to send SWITCH response");
 				}
+				sendSwitchResponse = false;
 			} else if (gotARequest) {
 				jpeg = mon.getImage();
 				int len = mon.getImageLength();
@@ -48,12 +49,11 @@ public class ServerOutputThread extends Thread {
 					}
 					putLine(os, s); // end of header
 					os.write(jpeg, 0, len); // send the image
-//					if(!motionDetected)  //TODO don't send the switch request on every response while in moviemode
-					sendSwitchResponse = true;
 				} catch (IOException e) {
-					System.out.println("Failed to send response");
+					System.out.println("Failed to send RECEIVE response");
 				}
 				mon.gotARequest(false);
+				sendSwitchResponse = true;
 			}
 		}
 	}

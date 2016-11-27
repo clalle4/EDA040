@@ -48,8 +48,21 @@ public class ClientOutputThread extends Thread {
 	private void sendRequest(OutputStream os) {
 		// Send a simple request, always for "/image.jpg"
 		try {
-			putLine(os, "GET /image.jpg HTTP/1.0");
-			putLine(os, ""); // The request ends with an empty line
+			putLine(os, "GET /image.jpg");
+			String mode;
+			if(mon.motionDetected()){
+				mode = "Movie";
+			} else {
+				mode = "Idle";
+			}
+			String s;
+			if(mon.getCameraMode() == ClientMonitor.AUTO){
+				s = "Auto";
+			} else {
+				s = "Manual";
+			}
+			putLine(os, "Camera mode: "+ mode + " (" + s + ")");
+			putLine(os, "");// end of the request
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

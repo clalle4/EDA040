@@ -29,7 +29,7 @@ public class ClientInputThread extends Thread {
 				is = sock.getInputStream();
 				// Read the header
 				String responseLine = getLine(is);
-				System.out.println("HTTP request " + responseLine + " received.");
+				System.out.println("Server response " + responseLine + " received.");
 				if(responseLine.equals("Switch to Movie mode!") && mon.getCameraMode() == ClientMonitor.AUTO){
 					mon.setMotionDetected(true);
 					

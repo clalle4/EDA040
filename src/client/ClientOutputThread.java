@@ -29,7 +29,7 @@ public class ClientOutputThread extends Thread {
 				}
 			} else {
 				try {
-					Thread.sleep(50); // 20 FPS
+					Thread.sleep(40); // 20 FPS
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

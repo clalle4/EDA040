@@ -33,7 +33,6 @@ public class GUI extends JFrame implements Runnable {
 		viewOptions = new String[] { "Auto", "Synchronous", "Asynchronous" };
 		icon1 = new ImageIcon();
 		icon2 = new ImageIcon();
-		init();
 	}
 
 	private void init() {
@@ -85,24 +84,31 @@ public class GUI extends JFrame implements Runnable {
 
 	// TODO All components are locked while the thread is running!
 	public void run() {
-		UpdatingThread updatingThread = new UpdatingThread();
-		updatingThread.start();
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				init();
 			}
 		});
+		UpdateCamera1Thread updateCamera1Thread = new UpdateCamera1Thread();
+		updateCamera1Thread.start();
+		UpdateCamera2Thread updateCamera2Thread = new UpdateCamera2Thread();
+		updateCamera2Thread.start();
 	}
 
-	// SwingUtilities.invokeLater(new Runnable() {
-	// public void run() {
-	// while (true) {
-	// updateText();
-	// LinkedList<byte[]> images = mon.getImages();
-	// refreshImage(images);
-	// }
-	// }
-	// });
+//	public void run() {
+//		SwingUtilities.invokeLater(new Runnable() {
+//			public void run() {
+//				while (true) {
+//					try {
+//						updateText();
+//						refreshImage(mon.getCam1Image(), 1);
+//						refreshImage(mon.getCam2Image(), 2);
+//					} catch (InterruptedException e) {
+//					}
+//				}
+//			}
+//		});
+//	}
 
 	private void updateText() {
 		String s = "Current camera mode: ";
@@ -117,13 +123,13 @@ public class GUI extends JFrame implements Runnable {
 	private void refreshImage(byte[] img, int cameraNbr) {
 		Image image = getToolkit().createImage(img);
 		getToolkit().prepareImage(image, -1, -1, null);
-		if(cameraNbr == 1){
+		if (cameraNbr == 1) {
 			icon1.setImage(image);
 			icon1.paintIcon(this, this.getGraphics(), 0, 80);
-		} else if(cameraNbr == 2){
+		} else if (cameraNbr == 2) {
 			icon2.setImage(image);
 			icon2.paintIcon(this, this.getGraphics(), 640, 80);
-			
+
 		}
 	}
 
@@ -147,12 +153,22 @@ public class GUI extends JFrame implements Runnable {
 		}
 	}
 
-	private class UpdatingThread extends Thread {
+	private class UpdateCamera1Thread extends Thread {
 		public void run() {
 			while (true) {
-				updateText();
 				try {
 					refreshImage(mon.getCam1Image(), 1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
+	private class UpdateCamera2Thread extends Thread {
+		public void run() {
+			while (true) {
+				try {
 					refreshImage(mon.getCam2Image(), 2);
 				} catch (InterruptedException e) {
 					e.printStackTrace();

@@ -37,7 +37,7 @@ public class ClientInputThread extends Thread {
 					
 				} else if (responseLine.substring(0, 8).equals("RECEIVE ")) {
 					imageLength = Integer.parseInt(getLine(is));
-					String state = getLine(is); 
+					getLine(is); // state
 					//get the time
 					int read = 0;
 					while (read < AxisM3006V.TIME_ARRAY_SIZE) {
@@ -47,6 +47,7 @@ public class ClientInputThread extends Thread {
 						read += n;
 					} // end of header
 					//get the image
+					jpeg = new byte[imageLength + 1];
 					read = 0;
 					while (read < imageLength) {
 						int n = is.read(jpeg, read, imageLength - read); // Blocking

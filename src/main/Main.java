@@ -9,6 +9,7 @@ import client.GUI;
 import client.ClientInputThread;
 import client.ClientMonitor;
 import client.ClientOutputThread;
+import client.ServerThread;
 
 public class Main {
 
@@ -18,6 +19,7 @@ public class Main {
 		ClientInputThread[] input = new ClientInputThread[2];
 		ClientOutputThread[] output = new ClientOutputThread[2];
 		Camera[] camera = new Camera[2];
+		ServerThread[] http = new ServerThread[2];
 		for (int i = 0; i < 2; i++) {
 			String server = null;
 			int port = 8011 + i;
@@ -27,6 +29,7 @@ public class Main {
 			input[i] = new ClientInputThread(mon, sock[i], i + 1);
 			mon.addOutputThread(output[i]);
 			System.out.println("Operating at port: "+ port);
+			http[i] = new ServerThread(port);
 		}
 		for (ClientInputThread it : input) {
 			it.start();
@@ -37,7 +40,9 @@ public class Main {
 		for (Camera cam : camera) {
 			cam.start();
 		}
-
+		for (ServerThread server : http) {
+			server.start();
+		}
 		GUI gui = new GUI(mon);
 		gui.run();
 	}

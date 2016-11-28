@@ -1,6 +1,6 @@
 package skeleton.demo;
 
-import skeleton.server.JPEGHTTPServer;
+import client.JPEGHTTPServer;
 import skeleton.client.JPEGHTTPClient;
 
 public class JPEGHTTPDemo {

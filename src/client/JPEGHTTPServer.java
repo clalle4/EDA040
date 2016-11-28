@@ -1,4 +1,4 @@
-package skeleton.server;
+package client;
 
 /*
  * Real-time and concurrent programming

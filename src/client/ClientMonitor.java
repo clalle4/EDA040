@@ -1,6 +1,5 @@
 package client;
 
-import java.nio.ByteBuffer;
 import java.util.LinkedList;
 
 public class ClientMonitor {
@@ -92,13 +91,10 @@ public class ClientMonitor {
 		return img.getJPEG();
 	}
 
-	private long getSynchronousDelay(byte[] time) {
+	private long getSynchronousDelay(long imageTime) {
 		long delay = 0;
 		long currentTime = System.currentTimeMillis();
-		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-		buffer.put(time);
-		buffer.flip();// need flip
-		long imageTime = buffer.getLong();
+		
 		long timePassed = currentTime - imageTime;
 		if (timePassed < synchronousDelay && !viewMode.equals("Asynchronous")) {
 			delay = synchronousDelay - timePassed;

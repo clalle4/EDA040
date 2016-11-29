@@ -10,7 +10,8 @@ public class ClientMonitor {
 	private int cameraMode;
 	private String viewMode;
 	private boolean motionDetected;
-	public static final long synchronousDelay = 500;
+	private boolean synchronous;
+	public static final long synchronousDelay = 200;
 	public static final int AUTO = 0;
 	public static final int IDLE = 1;
 	public static final int MOVIE = 2;
@@ -67,15 +68,17 @@ public class ClientMonitor {
 		return viewMode;
 	}
 
+	public synchronized boolean synchronous() {
+		return synchronous;
+	}
+
 	public synchronized byte[] getCam1Image() throws InterruptedException {
 		while (cam1Images.isEmpty()) {
 			wait();
 		}
 		Image img = cam1Images.removeFirst();
-		if (getViewMode().equals("Synchronous")) {
-			long delay = getSynchronousDelay(img.getTime());
-			wait(delay);
-		}
+		long delay = getSynchronousDelay(img.getTime());
+		wait(delay);
 		return img.getJPEG();
 	}
 
@@ -84,10 +87,8 @@ public class ClientMonitor {
 			wait();
 		}
 		Image img = cam2Images.removeFirst();
-		if (getViewMode().equals("Synchronous")) {
-			long delay = getSynchronousDelay(img.getTime());
-			wait(delay);
-		}
+		long delay = getSynchronousDelay(img.getTime());
+		wait(delay);
 		return img.getJPEG();
 	}
 
@@ -95,14 +96,19 @@ public class ClientMonitor {
 		long delay = 0;
 		long currentTime = System.currentTimeMillis();
 		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
-	    buffer.put(time);
-	    buffer.flip();//need flip 
-	    long imageTime = buffer.getLong();
-	    long timePassed = currentTime - imageTime;
-	    if(timePassed < synchronousDelay){
-	    	delay = synchronousDelay - timePassed;
-	    	System.out.println("Running in Synchronous mode. Viewing image has been delayed by: " + delay + " milliseconds");
-	    }
+		buffer.put(time);
+		buffer.flip();// need flip
+		long imageTime = buffer.getLong();
+		long timePassed = currentTime - imageTime;
+		if (timePassed < synchronousDelay && !viewMode.equals("Asynchronous")) {
+			delay = synchronousDelay - timePassed;
+			synchronous = true;
+			System.out.println(
+					"Running in Synchronous mode. Viewing image has been delayed by: " + delay + " milliseconds");
+		} else if (timePassed > synchronousDelay && !viewMode.equals("Synchronous")) {
+			synchronous = false;
+			System.out.println("Running in Asynchronous mode.");
+		}
 		return delay;
 	}
 

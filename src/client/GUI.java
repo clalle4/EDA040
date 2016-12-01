@@ -25,6 +25,7 @@ public class GUI extends JFrame implements Runnable {
 	private final String[] cameraOptions;
 	private ClientMonitor mon;
 	private JTextArea cameraModeJTA;
+	private JTextArea viewModeJTA;
 
 	public GUI(ClientMonitor mon) {
 		super();
@@ -68,7 +69,7 @@ public class GUI extends JFrame implements Runnable {
 		modePanel.add(cameraModeJTA);
 		cameraBox.setFont(font);
 		modePanel.add(cameraBox);
-		JTextArea viewModeJTA = new JTextArea("Current view mode: Synchronous");
+		viewModeJTA = new JTextArea("Current view mode: Synchronous");
 		viewModeJTA.setEditable(false);
 		viewModeJTA.setFont(font);
 		modePanel.add(viewModeJTA);
@@ -95,29 +96,41 @@ public class GUI extends JFrame implements Runnable {
 		updateCamera2Thread.start();
 	}
 
-//	public void run() {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			public void run() {
-//				while (true) {
-//					try {
-//						updateText();
-//						refreshImage(mon.getCam1Image(), 1);
-//						refreshImage(mon.getCam2Image(), 2);
-//					} catch (InterruptedException e) {
-//					}
-//				}
-//			}
-//		});
-//	}
+	// public void run() {
+	// SwingUtilities.invokeLater(new Runnable() {
+	// public void run() {
+	// while (true) {
+	// try {
+	// updateText();
+	// refreshImage(mon.getCam1Image(), 1);
+	// refreshImage(mon.getCam2Image(), 2);
+	// } catch (InterruptedException e) {
+	// }
+	// }
+	// }
+	// });
+	// }
 
 	private void updateText() {
-		String s = "Current camera mode: ";
-		if (mon.motionDetected()) {
-			s += "Movie";
-		} else {
-			s += "Idle";
-			cameraModeJTA.setText(s);
-		}
+		SwingUtilities.invokeLater(new Runnable() {
+			public void run() {
+				String s = "Current camera mode: ";
+				if (mon.motionDetected()) {
+					s += "Movie";
+				} else {
+					s += "Idle";
+				}
+				
+				String viewMode = "Current view mode: ";
+				if(mon.synchronous()){
+					viewMode += "Synchronous";
+				} else {
+					viewMode += "Asynchronous";
+				}
+				cameraModeJTA.setText(s);
+				viewModeJTA.setText(viewMode);
+			}
+		});
 	}
 
 	private void refreshImage(byte[] img, int cameraNbr) {
@@ -150,6 +163,7 @@ public class GUI extends JFrame implements Runnable {
 			JComboBox<String> combo = (JComboBox<String>) e.getSource();
 			String mode = (String) combo.getSelectedItem();
 			mon.setViewMode(mode);
+			viewModeJTA.setText("Current view mode: " + mode);
 		}
 	}
 
@@ -157,6 +171,7 @@ public class GUI extends JFrame implements Runnable {
 		public void run() {
 			while (true) {
 				try {
+					updateText();
 					refreshImage(mon.getCam1Image(), 1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
@@ -164,11 +179,12 @@ public class GUI extends JFrame implements Runnable {
 			}
 		}
 	}
-	
+
 	private class UpdateCamera2Thread extends Thread {
 		public void run() {
 			while (true) {
 				try {
+					updateText();
 					refreshImage(mon.getCam2Image(), 2);
 				} catch (InterruptedException e) {
 					e.printStackTrace();

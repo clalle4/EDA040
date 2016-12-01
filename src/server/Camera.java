@@ -5,6 +5,10 @@ import java.net.ServerSocket;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
+
+
+
+
 public class Camera extends Thread {
 	private AxisM3006V myCamera;
 	private ServerMonitor serverMonitor;
@@ -14,12 +18,12 @@ public class Camera extends Thread {
 	private byte[] jpeg;
 	private byte[] time;
 
-	public Camera(int port) {
+	public Camera(String server, int port) {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
 		time = new byte[AxisM3006V.TIME_ARRAY_SIZE];
 		myCamera = new AxisM3006V();
 		myCamera.init();
-		myCamera.setProxy("argus-1.student.lth.se", port);
+		myCamera.setProxy(server, port);
 		try {
 			serverSocket = new ServerSocket(port);
 		} catch (IOException e) {

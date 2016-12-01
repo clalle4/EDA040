@@ -20,8 +20,8 @@ public class Main {
 		Camera[] camera = new Camera[2];
 		for (int i = 0; i < 2; i++) {
 			String server = null;
-			int port = 8011 + i;
-			camera[i] = new Camera(port);
+			int port = 8011+ i;
+			camera[i] = new Camera(server, port);
 			sock[i] = new Socket(server, port);
 			output[i] = new ClientOutputThread(mon, sock[i]);
 			input[i] = new ClientInputThread(mon, sock[i], i + 1);

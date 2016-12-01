@@ -10,6 +10,8 @@ public class ClientMonitor {
 	private String viewMode;
 	private boolean motionDetected;
 	private boolean synchronous;
+	private long receiveCam1Time;
+	private long receiveCam2Time;
 	public static final long synchronousDelay = 200;
 	public static final int AUTO = 0;
 	public static final int IDLE = 1;
@@ -22,13 +24,17 @@ public class ClientMonitor {
 		cameraMode = ClientMonitor.AUTO;
 		motionDetected = false;
 		viewMode = "Auto";
+		receiveCam1Time = 0;
+		receiveCam2Time = Long.MAX_VALUE;
 	}
 
 	public synchronized void addImage(Image image, int orderNbr) {
 		System.out.println(cam1Images.size() + "                    " + cam2Images.size());
 		if (orderNbr == 1) {
+			receiveCam1Time = System.currentTimeMillis();
 			cam1Images.add(image);
 		} else if (orderNbr == 2) {
+			receiveCam2Time = System.currentTimeMillis();
 			cam2Images.add(image);
 		}
 		notifyAll();
@@ -76,6 +82,7 @@ public class ClientMonitor {
 			wait();
 		}
 		Image img = cam1Images.removeFirst();
+		checkSynchronous();
 		long delay = getSynchronousDelay(img.getTime());
 		wait(delay);
 		return img.getJPEG();
@@ -86,6 +93,7 @@ public class ClientMonitor {
 			wait();
 		}
 		Image img = cam2Images.removeFirst();
+		checkSynchronous();
 		long delay = getSynchronousDelay(img.getTime());
 		wait(delay);
 		return img.getJPEG();
@@ -94,18 +102,25 @@ public class ClientMonitor {
 	private long getSynchronousDelay(long imageTime) {
 		long delay = 0;
 		long currentTime = System.currentTimeMillis();
-		
 		long timePassed = currentTime - imageTime;
-		if (timePassed < synchronousDelay && !viewMode.equals("Asynchronous")) {
+		if (synchronous) {
 			delay = synchronousDelay - timePassed;
-			synchronous = true;
 			System.out.println(
 					"Running in Synchronous mode. Viewing image has been delayed by: " + delay + " milliseconds");
-		} else if (timePassed > synchronousDelay && !viewMode.equals("Synchronous")) {
-			synchronous = false;
+		} else {
 			System.out.println("Running in Asynchronous mode.");
 		}
 		return delay;
+	}
+	
+	private void checkSynchronous(){
+		long timeDiff = Math.abs(receiveCam1Time - receiveCam2Time);
+		if( timeDiff <= synchronousDelay && !viewMode.equals("Asynchronous")){
+			synchronous = true;
+		} else if (timeDiff > synchronousDelay && !viewMode.equals("Synchronous")){
+			synchronous = false;
+		}
+		notifyAll();
 	}
 
 	public synchronized void addOutputThread(ClientOutputThread clientOutputThread) {

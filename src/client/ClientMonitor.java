@@ -16,10 +16,14 @@ public class ClientMonitor {
 	public static final int AUTO = 0;
 	public static final int IDLE = 1;
 	public static final int MOVIE = 2;
-	
+
 	private int delay = 500;
 	private int timeWindow = 200;
 	
+	private LinkedList<Image> tempStorageForImages;
+	
+	private long latestTimeStampIm1 = 0;
+	private long latestTimeStampIm2 = 0;
 
 	public ClientMonitor() {
 		cam1Images = new LinkedList<Image>();
@@ -87,13 +91,16 @@ public class ClientMonitor {
 		}
 		Image img = cam1Images.removeFirst();
 		
-		
-//		checkSynchronous();
-//		long delay = getSynchronousDelay(img.getTime());
-//		wait(delay);
-		
+		latestTimeStampIm1 = img.getTime();
+
+		setSynchronisedMode();
+
+		// checkSynchronous();
+		// long delay = getSynchronousDelay(img.getTime());
+		// wait(delay);
+
 		waitIfSynchronous(img);
-		
+
 		return img.getJPEG();
 	}
 
@@ -103,23 +110,53 @@ public class ClientMonitor {
 		}
 		Image img = cam2Images.removeFirst();
 		
-		
-		
-//		checkSynchronous();
-//		long delay = getSynchronousDelay(img.getTime());
-//		wait(delay);
-		
+		latestTimeStampIm2 = img.getTime();
+
+		setSynchronisedMode();
+
+		// checkSynchronous();
+		// long delay = getSynchronousDelay(img.getTime());
+		// wait(delay);
+
 		waitIfSynchronous(img);
-		
+
 		return img.getJPEG();
 	}
-	
+
 	private void waitIfSynchronous(Image img) throws InterruptedException {
 		if (synchronous) {
 			long timeStamp = img.getTime();
 			long timeToSend = timeStamp + delay;
 			wait(timeToSend - System.currentTimeMillis());
 		}
+	}
+
+	private void setSynchronisedMode() {
+		
+		if(!cam1Images.isEmpty()) {
+			long timeStamp1 = cam1Images.getFirst().getTime();
+			if (Math.abs(timeStamp1 - latestTimeStampIm2) < timeWindow) {
+				synchronous = true;
+			} else if (!cam2Images.isEmpty()) {
+				long timeStamp2 = cam2Images.getFirst().getTime();
+				if (Math.abs(timeStamp1 - timeStamp2) < timeWindow) {
+					synchronous = true;
+				}
+			}
+		}
+		
+		
+				
+		if (!cam1Images.isEmpty() && !cam2Images.isEmpty()) {
+			long timeStamp1 = cam1Images.getFirst().getTime();
+			long timeStamp2 = cam2Images.getFirst().getTime();
+			if (Math.abs(timeStamp1 - timeStamp2) < timeWindow) {
+				synchronous = true;
+			}
+		}
+		
+		
+
 	}
 
 	private long getSynchronousDelay(long imageTime) {
@@ -135,12 +172,12 @@ public class ClientMonitor {
 		}
 		return delay;
 	}
-	
-	private void checkSynchronous(){
+
+	private void checkSynchronous() {
 		long timeDiff = Math.abs(receiveCam1Time - receiveCam2Time);
-		if( timeDiff <= synchronousDelay && !viewMode.equals("Asynchronous")){
+		if (timeDiff <= synchronousDelay && !viewMode.equals("Asynchronous")) {
 			synchronous = true;
-		} else if (timeDiff > synchronousDelay && !viewMode.equals("Synchronous")){
+		} else if (timeDiff > synchronousDelay && !viewMode.equals("Synchronous")) {
 			synchronous = false;
 		}
 		notifyAll();

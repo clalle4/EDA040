@@ -26,6 +26,7 @@ public class GUI extends JFrame implements Runnable {
 	private ClientMonitor mon;
 	private JTextArea cameraModeJTA;
 	private JTextArea viewModeJTA;
+	private JTextArea infoJTA;
 
 	public GUI(ClientMonitor mon) {
 		super();
@@ -55,7 +56,7 @@ public class GUI extends JFrame implements Runnable {
 		namePanel.add(name2);
 		JPanel modePanel = new JPanel(new GridLayout(3, 2));
 		Font font = new Font("TimesRoman", Font.BOLD, 30);
-		JTextArea infoJTA = new JTextArea("Movie mode triggered by camera 1 (ex)");
+		infoJTA = new JTextArea("");
 		infoJTA.setEditable(false);
 		infoJTA.setFont(font);
 		modePanel.add(infoJTA);
@@ -83,7 +84,6 @@ public class GUI extends JFrame implements Runnable {
 		setVisible(true);
 	}
 
-	// TODO All components are locked while the thread is running!
 	public void run() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -96,28 +96,15 @@ public class GUI extends JFrame implements Runnable {
 		updateCamera2Thread.start();
 	}
 
-	// public void run() {
-	// SwingUtilities.invokeLater(new Runnable() {
-	// public void run() {
-	// while (true) {
-	// try {
-	// updateText();
-	// refreshImage(mon.getCam1Image(), 1);
-	// refreshImage(mon.getCam2Image(), 2);
-	// } catch (InterruptedException e) {
-	// }
-	// }
-	// }
-	// });
-	// }
-
 	private void updateText() {
 		SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
 				String s = "Current camera mode: ";
 				if (mon.motionDetected()) {
 					s += "Movie";
+					infoJTA.setText("Movie mode triggered by: " + mon.getTriggeringCamera());
 				} else {
+					infoJTA.setText("");
 					s += "Idle";
 				}
 				

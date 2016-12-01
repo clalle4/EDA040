@@ -12,6 +12,7 @@ public class ClientMonitor {
 	private boolean synchronous;
 	private long receiveCam1Time;
 	private long receiveCam2Time;
+	private String triggeringCamera;
 	public static final long synchronousDelay = 200;
 	public static final int AUTO = 0;
 	public static final int IDLE = 1;
@@ -43,9 +44,9 @@ public class ClientMonitor {
 	public synchronized void setCameraMode(int mode) {
 		cameraMode = mode;
 		if (cameraMode == MOVIE) {
-			setMotionDetected(true);
+			setMotionDetected(true , "Manual");
 		} else {
-			setMotionDetected(false);
+			setMotionDetected(false, "Manual");
 		}
 		notifyAll();
 	}
@@ -58,7 +59,10 @@ public class ClientMonitor {
 		return motionDetected;
 	}
 
-	public synchronized void setMotionDetected(boolean motionDetected) {
+	public synchronized void setMotionDetected(boolean motionDetected, String triggeringCamera) {
+		if(!this.motionDetected && motionDetected){
+			this.triggeringCamera = triggeringCamera;
+		}
 		this.motionDetected = motionDetected;
 		notifyAllOutputThreads();
 		notifyAll();
@@ -77,6 +81,10 @@ public class ClientMonitor {
 		return synchronous;
 	}
 
+	public synchronized String getTriggeringCamera(){
+		return triggeringCamera;
+	}
+	
 	public synchronized byte[] getCam1Image() throws InterruptedException {
 		while (cam1Images.isEmpty()) {
 			wait();

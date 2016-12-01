@@ -32,7 +32,7 @@ public class ClientInputThread extends Thread {
 				String responseLine = getLine(is);
 				System.out.println("Server response " + responseLine + " received.");
 				if(responseLine.equals("Switch to Movie mode!") && mon.getCameraMode() == ClientMonitor.AUTO){
-					mon.setMotionDetected(true);
+					mon.setMotionDetected(true, "Camera "+orderNbr);
 					
 				} else if (responseLine.substring(0, 8).equals("RECEIVE ")) {
 					imageLength = Integer.parseInt(getLine(is));

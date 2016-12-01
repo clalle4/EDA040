@@ -16,6 +16,10 @@ public class ClientMonitor {
 	public static final int AUTO = 0;
 	public static final int IDLE = 1;
 	public static final int MOVIE = 2;
+	
+	private int delay = 500;
+	private int timeWindow = 200;
+	
 
 	public ClientMonitor() {
 		cam1Images = new LinkedList<Image>();
@@ -82,9 +86,14 @@ public class ClientMonitor {
 			wait();
 		}
 		Image img = cam1Images.removeFirst();
-		checkSynchronous();
-		long delay = getSynchronousDelay(img.getTime());
-		wait(delay);
+		
+		
+//		checkSynchronous();
+//		long delay = getSynchronousDelay(img.getTime());
+//		wait(delay);
+		
+		waitIfSynchronous(img);
+		
 		return img.getJPEG();
 	}
 
@@ -93,10 +102,24 @@ public class ClientMonitor {
 			wait();
 		}
 		Image img = cam2Images.removeFirst();
-		checkSynchronous();
-		long delay = getSynchronousDelay(img.getTime());
-		wait(delay);
+		
+		
+		
+//		checkSynchronous();
+//		long delay = getSynchronousDelay(img.getTime());
+//		wait(delay);
+		
+		waitIfSynchronous(img);
+		
 		return img.getJPEG();
+	}
+	
+	private void waitIfSynchronous(Image img) throws InterruptedException {
+		if (synchronous) {
+			long timeStamp = img.getTime();
+			long timeToSend = timeStamp + delay;
+			wait(timeToSend - System.currentTimeMillis());
+		}
 	}
 
 	private long getSynchronousDelay(long imageTime) {

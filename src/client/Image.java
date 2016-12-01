@@ -10,9 +10,11 @@ public class Image {
 		this.jpeg = jpeg;
 		this.time = time;
 	}
+	
 	public byte[] getJPEG(){
 		return jpeg;
 	}
+	
 	public long getTime(){
 		ByteBuffer buffer = ByteBuffer.allocate(Long.BYTES);
 		buffer.put(time);

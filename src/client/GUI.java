@@ -93,22 +93,25 @@ public class GUI extends JFrame implements Runnable {
 		updateCamera1Thread.start();
 		UpdateCamera2Thread updateCamera2Thread = new UpdateCamera2Thread();
 		updateCamera2Thread.start();
+		
+//		UpdateCameraThread updateCameraThread = new UpdateCameraThread();
+//		updateCameraThread.start();
 	}
 
-//	public void run() {
-//		SwingUtilities.invokeLater(new Runnable() {
-//			public void run() {
-//				while (true) {
-//					try {
-//						updateText();
-//						refreshImage(mon.getCam1Image(), 1);
-//						refreshImage(mon.getCam2Image(), 2);
-//					} catch (InterruptedException e) {
-//					}
-//				}
-//			}
-//		});
-//	}
+	// public void run() {
+	// SwingUtilities.invokeLater(new Runnable() {
+	// public void run() {
+	// while (true) {
+	// try {
+	// updateText();
+	// refreshImage(mon.getCam1Image(), 1);
+	// refreshImage(mon.getCam2Image(), 2);
+	// } catch (InterruptedException e) {
+	// }
+	// }
+	// }
+	// });
+	// }
 
 	private void updateText() {
 		String s = "Current camera mode: ";
@@ -164,7 +167,7 @@ public class GUI extends JFrame implements Runnable {
 			}
 		}
 	}
-	
+
 	private class UpdateCamera2Thread extends Thread {
 		public void run() {
 			while (true) {
@@ -176,4 +179,22 @@ public class GUI extends JFrame implements Runnable {
 			}
 		}
 	}
+
+//	private class UpdateCameraThread extends Thread {
+//		public void run() {
+//			while (true) {
+//				try {
+//					byte[] im1 = mon.getCam1Image();
+//					byte[] im2 = mon.getCam2Image();
+//					
+//
+//					// refreshImage(im1, 1);
+//					// refreshImage(im2, 2);
+//
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 }

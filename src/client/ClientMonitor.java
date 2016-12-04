@@ -29,7 +29,7 @@ public class ClientMonitor {
 
 	private int syncMode = 0;
 
-	private int delay = 500;
+	private int syncDelay = 500;
 	private int tresHold = 200;
 
 	private long latestTimeStampCam1 = 0;
@@ -137,7 +137,13 @@ public class ClientMonitor {
 		// måste komma efter ovanstående rader!!
 		setSynchronisedMode(1);
 
-		waitIfSynchronous(img);
+		waitIfSynchronous(img, 1);
+
+		// long delay = synchronousDelay(img);
+		// System.out.println("bild 1: time stamp = " + latestTimeStampCam1 + ",
+		// delay = " + delay);
+		// wait(delay);
+		// notifyAll();
 
 		return img.getJPEG();
 	}
@@ -157,19 +163,40 @@ public class ClientMonitor {
 		// måste komma efter ovanstående rader!!
 		setSynchronisedMode(2);
 
-		waitIfSynchronous(img);
+		waitIfSynchronous(img, 2);
+
+		// long delay = synchronousDelay(img);
+		// System.out.println("bild 2: time stamp = " + latestTimeStampCam2 + ",
+		// delay = " + delay);
+		// wait(delay);
+		// notifyAll();
 
 		return img.getJPEG();
 	}
 
-	private void waitIfSynchronous(Image img) throws InterruptedException {
+	private void waitIfSynchronous(Image img, int cam) throws InterruptedException {
 		if (synchronous) {
+			System.out.println("synchronous");
 			long timeStamp = img.getTime();
-			long timeToSend = timeStamp + delay;
-			wait(timeToSend - System.currentTimeMillis());
+			long timeToSend = timeStamp + syncDelay;
+			long delay = timeToSend - System.currentTimeMillis();
+			System.out.println("kamera " + cam + ": timeStamp = " + timeStamp + ", timeToSend = " + timeToSend
+					+ ", currentTime = " + System.currentTimeMillis() + ", delay = " + delay);
+			wait(delay);
 			notifyAll();
 		}
+	}
 
+	private long synchronousDelay(Image img) {
+		if (synchronous) {
+			System.out.println("synchronous");
+
+			long timeStamp = img.getTime();
+			long timeToSend = timeStamp + syncDelay;
+			return (timeToSend - System.currentTimeMillis());
+		}
+
+		return 0;
 	}
 
 	// fix this method!!

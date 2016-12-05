@@ -12,7 +12,7 @@ public class ServerMain {
 			String server = null;
 			int port = 8011 + i;
 			camera[i] = new Camera(server, port);
-			HTTP[i] = new JPEGHTTPServer(port+2);
+			HTTP[i] = new JPEGHTTPServer();
 		}
 		for (Camera cam : camera) {
 			cam.start();

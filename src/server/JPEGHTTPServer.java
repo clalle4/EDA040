@@ -27,11 +27,11 @@ public class JPEGHTTPServer extends Thread {
 	/**
 	 * @param   port   The TCP port the server should listen to
 	 */
-	public JPEGHTTPServer(int port) {
-		myPort   = port;
+	public JPEGHTTPServer() {
+		myPort   = 80;
 		myCamera = new AxisM3006V();
 		myCamera.init();
-		myCamera.setProxy("argus-1.student.lth.se", port);
+		myCamera.setProxy("argus-1.student.lth.se", myPort);
 	}
 
 	// --------------------------------------------------------- PUBLIC METHODS

@@ -2,6 +2,10 @@ package server;
 
 import se.lth.cs.eda040.fakecamera.AxisM3006V;
 
+/**
+ * The monitor to handle synchronization between the server threads (Camera,
+ * ServerInputThread and serverOutputThread)
+ */
 public class ServerMonitor {
 	private int len;
 	private byte[] jpeg;
@@ -10,9 +14,6 @@ public class ServerMonitor {
 	private boolean gotARequest;
 	private boolean runningInMovieMode;
 	private String cameraControl = "";
-	// By convention, these bytes are always sent between lines
-	// (CR = 13 = carriage return, LF = 10 = line feed)
-	// private static final byte[] CRLF = { 13, 10 };
 
 	public ServerMonitor() {
 		jpeg = new byte[AxisM3006V.IMAGE_BUFFER_SIZE];
@@ -20,17 +21,26 @@ public class ServerMonitor {
 	}
 
 	/**
-	 * Send a line on OutputStream 's', terminated by CRLF. The CRLF should not
-	 * be included in the string str.
+	 * Sets the image and the length
+	 * 
+	 * @param len
+	 *            Length of the image
+	 * @param jpeg
+	 *            The image
 	 */
-
 	synchronized public void setImage(int len, byte[] jpeg) {
 		this.len = len;
 		System.arraycopy(jpeg, 0, this.jpeg, 0, len);
 		notifyAll();
 	}
-	
-	synchronized public void setTime(byte[] time){
+
+	/**
+	 * Sets the time of the image
+	 * 
+	 * @param time
+	 *            Time stamp of the image
+	 */
+	synchronized public void setTime(byte[] time) {
 		System.arraycopy(time, 0, this.time, 0, AxisM3006V.TIME_ARRAY_SIZE);
 		notifyAll();
 	}
@@ -42,8 +52,8 @@ public class ServerMonitor {
 	synchronized public int getImageLength() {
 		return len;
 	}
-	
-	synchronized public byte[] getTime(){
+
+	synchronized public byte[] getTime() {
 		return time;
 	}
 
@@ -78,7 +88,13 @@ public class ServerMonitor {
 		this.cameraControl = cameraControl;
 		notifyAll();
 	}
-	
+
+	/**
+	 * If the camera control is "Auto" waits as long we don't have a request and
+	 * motion has not been detected from the camera or as long we don't have a
+	 * request and the client is already running in movie mode. Otherwise waits
+	 * until there is a request
+	 */
 	synchronized public void waitForRequest() {
 		try {
 			if (cameraControl.equals("Auto")) {

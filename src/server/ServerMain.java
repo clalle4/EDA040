@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 public class ServerMain {
-
+	
 	public static void main(String[] args) throws UnknownHostException, IOException {
 		Camera[] camera = new Camera[2];
 		JPEGHTTPServer[] HTTP = new JPEGHTTPServer[2];

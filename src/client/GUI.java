@@ -45,17 +45,18 @@ public class GUI extends JFrame implements Runnable {
 
 		getContentPane().setLayout(new BorderLayout());
 		JPanel namePanel = new JPanel(new GridLayout(1, 2));
-		Font f = new Font("TimesRoman", Font.ITALIC, 25);
+		Font cameraFont = new Font("Georgia", Font.PLAIN, 25);
 		JTextArea name1 = new JTextArea("Camera 1");
-		name1.setFont(f);
+		name1.setFont(cameraFont);
 		name1.setEditable(false);
 		namePanel.add(name1);
 		JTextArea name2 = new JTextArea("Camera 2");
-		name2.setFont(f);
+		name2.setFont(cameraFont);
 		name2.setEditable(false);
 		namePanel.add(name2);
 		JPanel modePanel = new JPanel(new GridLayout(3, 2));
-		Font font = new Font("TimesRoman", Font.BOLD, 30);
+		Font font = new Font("Georgia", Font.BOLD, 30);
+		Font font2 = new Font("Georgia", Font.PLAIN, 30);
 		infoJTA = new JTextArea("");
 		infoJTA.setEditable(false);
 		infoJTA.setFont(font);
@@ -66,15 +67,15 @@ public class GUI extends JFrame implements Runnable {
 		modePanel.add(jta);
 		cameraModeJTA = new JTextArea("Current camera mode: Idle");
 		cameraModeJTA.setEditable(false);
-		cameraModeJTA.setFont(font);
+		cameraModeJTA.setFont(font2);
 		modePanel.add(cameraModeJTA);
-		cameraBox.setFont(font);
+		cameraBox.setFont(font2);
 		modePanel.add(cameraBox);
 		viewModeJTA = new JTextArea("Current view mode: Synchronous");
 		viewModeJTA.setEditable(false);
-		viewModeJTA.setFont(font);
+		viewModeJTA.setFont(font2);
 		modePanel.add(viewModeJTA);
-		viewBox.setFont(font);
+		viewBox.setFont(font2);
 		modePanel.add(viewBox);
 		add(namePanel, BorderLayout.PAGE_START);
 		add(modePanel, BorderLayout.PAGE_END);
@@ -107,9 +108,9 @@ public class GUI extends JFrame implements Runnable {
 					infoJTA.setText("");
 					s += "Idle";
 				}
-				
+
 				String viewMode = "Current view mode: ";
-				if(mon.synchronous()){
+				if (mon.synchronous()) {
 					viewMode += "Synchronous";
 				} else {
 					viewMode += "Asynchronous";
@@ -179,4 +180,34 @@ public class GUI extends JFrame implements Runnable {
 			}
 		}
 	}
+
+//	// OBS TEST!!!
+//	private class UpdateCameraThread extends Thread {
+//		public void run() {
+//			while (true) {
+//				try {
+//					updateText();
+//					// hämta bild
+//					client.Image[] images = mon.getImages();
+//					boolean img1Exists = false;
+//					boolean img2Exists = false;
+//					
+//					if (images[0] != null) {
+//						byte[] cam1Image = images[0].getJPEG();
+//						img1Exists = true;
+//					}
+//					if (images[1] != null) {
+//						byte[] cam2Image = images[1].getJPEG();
+//						img2Exists = true;
+//					}
+//					
+//					
+//
+//					refreshImage(mon.getCam2Image(), 2);
+//				} catch (InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//		}
+//	}
 }

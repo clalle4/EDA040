@@ -4,6 +4,8 @@ The system contains two seperate programs divided into packages. One client and 
 ##Server manual
 The server is installed on the cameras according to the guide on the EDA040 homepage. After installation one can run the software through the command "./Main XXXX". "XXXX" should be the portnumber one wishes to run the server on, if an incorrect port is used the program will terminate. Once the server is up and running it can be left alone untill terminated by exiting the camera.
 
+If one wishes to start the server through the proxy one may follow the instructions on the EDA040 webpage to upload and run the distributed file, followed by running the server with the proper camera adress and port.
+
 If the camera detects motion it will notify its client so, and the client will switch to "movie mode" (see client description below).
 
 ##Client manual 
